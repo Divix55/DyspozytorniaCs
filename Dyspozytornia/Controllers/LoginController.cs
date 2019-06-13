@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Dyspozytornia.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Dyspozytornia.Controllers
 {
-    public class HomeController : Controller
+    public class LoginController : Controller
     {
-        [Route("")]
-        [Route("/home")]
-        [Route("/index")]
-        public IActionResult Index()
+        [Route("/login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+        
+        [Route("/register")]
+        public IActionResult Rgister()
         {
             return View();
         }
 
-        [Route("/about")]
-        public IActionResult About()
+        [Route("/logout")]
+        public String Logout()
+        {
+            return "logout";
+        }
+
+        [Route("/account")]
+        public IActionResult Account()
         {
             return View();
         }
-
-        [Route("/contact")]
-        public IActionResult Contact()
-        {
-            return View();
-        }
-
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
