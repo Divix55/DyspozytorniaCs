@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Login";
+    
+}
+
+<section class="mainBody">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="mainText">
+                    <!--<c:url value="/login" var="to_login"/>-->
+                    <form class="form-horizontal" name="login" action="" method="post" accept-charset="utf-8">
+                        <div class="form-group">
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                <input type="text" name="userName" class="form-control" placeHolder="Login" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                <input type="password" name="userPassword" class="form-control" placeHolder="Password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"> Zapamietaj
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                <input type="submit" class="btn btn-default" value="Zaloguj">
+                                <button type="reset" class="btn btn-default">Wyczysc</button>
+                            </div>
+                        </div>
+                    </form>
+                    <a href="/register"><p>Zarejestruj sie</p></a>
+                </div>
+            </div>
+        </div>
+    </section>
