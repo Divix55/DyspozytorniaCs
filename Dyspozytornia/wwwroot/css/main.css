@@ -1,0 +1,93 @@
+body {
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-position-x: 50%;
+    background-position-y: 0%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("/img/truck-wall.jpg");
+    background-color: #000000;
+    background-attachment: fixed;
+    overflow-x: hidden;
+    overflow-y: auto;
+    color: #000000;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+}
+
+footer {
+    color: #ffffff;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px;
+}
+
+a p{
+    color: #6c757d;
+    text-decoration: underline;
+}
+
+a p:hover{
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+.mainBody {
+    background-color: rgba(0, 0, 0, .5);
+    text-align: center;
+    color: #000;
+}
+
+.title {
+    padding-left: 20px;
+    text-transform: uppercase;
+}
+
+.mainText {
+    padding: 20px;
+    color: #ffffff;
+}
+
+.credits {
+    margin-top: 20px;
+}
+
+.row {
+    background-color: rgba(0, 0, 0, .3);
+    padding-top: 10px;
+    padding-bottom: 50px;
+}
+
+.navbar {
+    min-height: 57px;
+}
+
+.textleft{
+    text-align: left;
+}
+
+.paddingbottom{
+    padding-bottom: 30px;
+}
+
+.mapouter{
+    text-align: right;
+    height: 500px;
+    width: 600px;
+}
+
+.gmap_canvas{
+    overflow: hidden;
+    background:none !important;
+    height:500px;
+    width:600px;
+}

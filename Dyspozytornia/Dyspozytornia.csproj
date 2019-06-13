@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -7,11 +7,23 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.bundle.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.bundle.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.bundle.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.bundle.min.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-js\bootstrap.min.js.map" />
     </ItemGroup>
 
 </Project>
