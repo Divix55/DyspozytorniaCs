@@ -1,4 +1,4 @@
-using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dyspozytornia.Controllers
@@ -6,25 +6,29 @@ namespace Dyspozytornia.Controllers
     public class SupplyController : Controller
     {
         [Route("/supply")]
+        [Authorize]
         public IActionResult Supply()
         {
             return View();
         }
-        
+
         [Route("/acceptDelivery")]
+        [Authorize]
         public IActionResult AcceptDelivery()
         {
             return View();
         }
-        
+
         [Route("/supplyDeliveryRequest")]
-        public String SupplyDeliveryRequestGet()
+        [Authorize]
+        public string SupplyDeliveryRequestGet()
         {
             return "test";
         }
-        
+
         [Route("/supplyDeliveryRequest")]
-        public String SupplyDeliveryRequestPost()
+        [Authorize]
+        public string SupplyDeliveryRequestPost()
         {
             return "test";
         }
