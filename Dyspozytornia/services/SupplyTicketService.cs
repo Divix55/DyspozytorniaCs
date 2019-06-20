@@ -1,22 +1,61 @@
 using System;
 using System.Collections;
+using Dyspozytornia.Data;
 using Dyspozytornia.Models;
-
+// Dd
 namespace Dyspozytornia.services
 {
-    public interface SupplyTicketService
+    public class SupplyTicketService: ISupplyTicketService
     {
-        ArrayList showTickets();
-        void createTicketNaive(SupplyTicket ticket);
-        void createTicketEntry(SupplyTicket ticket);
-        String getShopsName(int shopId);
-        float getShopsLon(int shopId);
-        float getShopsLat(int shopId);
-        float getStoreLat(int storeId);
-        float getStoreLon(int storeId);
-        int[] getDriversByStoreId(int storeId);
-        ArrayList getTicketsByDrivers(int[] drivers);
+        private ISupplyTicketRepository _supplyTicketRepository;
 
-        void createTicketNew(SupplyTicket ticket);
+        public SupplyTicketService()
+        {
+            _supplyTicketRepository = new SupplyTicketRepository();
+        }
+
+        public ArrayList/*<SupplyTicket>*/ showTickets() {
+            return _supplyTicketRepository.createTicketTable();
+        }
+
+        public void createTicketNaive(SupplyTicket ticket) {
+            _supplyTicketRepository.createTicketNaive(ticket);
+        }
+
+        public void createTicketEntry(SupplyTicket ticket) {
+            _supplyTicketRepository.createTicketEntry(ticket);
+        }
+
+        public String getShopsName(int shopId) { return _supplyTicketRepository.getShopsName(shopId); }
+
+        public float getShopsLon(int shopId) {
+            return _supplyTicketRepository.getShopsLon(shopId);
+        }
+
+        public float getShopsLat(int shopId) {
+            return _supplyTicketRepository.getShopsLat(shopId);
+        }
+
+
+        public float getStoreLat(int storeId){
+            return _supplyTicketRepository.getStoreLat(storeId);
+
+        }
+
+        public float getStoreLon(int storeId){
+            return _supplyTicketRepository.getStoreLon(storeId);
+        }
+
+        public int[] getDriversByStoreId(int storeId) {
+            return _supplyTicketRepository.getDriversByStoreId(storeId);
+        }
+
+        public ArrayList/*<SupplyTicket>*/ getTicketsByDrivers(int[] drivers) {
+            return _supplyTicketRepository.getTicketsByDrivers(drivers);
+        }
+
+        public void createTicketNew(SupplyTicket ticket) {
+            this._supplyTicketRepository.createTicketNew(ticket);
+        }
     }
 }
