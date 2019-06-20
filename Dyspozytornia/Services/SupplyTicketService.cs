@@ -55,7 +55,7 @@ namespace Dyspozytornia.services
         }
 
         public void createTicketNew(SupplyTicket ticket) {
-            this._supplyTicketRepository.createTicketNew(ticket);
+            _supplyTicketRepository.createTicketNew(ticket);
         }
     }
 }
