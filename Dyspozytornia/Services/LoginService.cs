@@ -6,9 +6,9 @@ namespace Dyspozytornia.Services
 {
     public class LoginService : ILoginService
     {
-        private readonly IDbRepository dataSource;
+        private readonly ILoginRepository dataSource;
 
-        public LoginService(IDbRepository dataSource)
+        public LoginService(ILoginRepository dataSource)
         {
             this.dataSource = dataSource;
         }

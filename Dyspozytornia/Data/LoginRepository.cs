@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 
 namespace Dyspozytornia.Data
 {
-    public class MySqlRepository : IDbRepository
+    public class LoginRepository : ILoginRepository
     {
         public bool CreateUser(User user)
         {
