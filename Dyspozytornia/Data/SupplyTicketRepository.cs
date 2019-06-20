@@ -1,20 +1,23 @@
 using System;
 using System.Collections;
 using Dyspozytornia.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Dyspozytornia.dao
+namespace Dyspozytornia.Data
 {
-    public class SupplyTicketDAOImpl: SupplyTicketDAO
+    public class SupplyTicketRepository: ISupplyTicketRepository
     {
         private readonly DataSource dataSource;
-        //Logger log = Logger.getLogger("SupplyTicketDAOImpl");
 
-        public SupplyTicketDAOImpl(DataSource dataSource) { this.dataSource = dataSource; }
+        public SupplyTicketRepository()
+        {
+            this.dataSource = dataSource;
+        }
 
         public ArrayList createTicketTable() {
             String sql = "select * from Supply";
             
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             ArrayList listOfTickets = new ArrayList();
 
             try{
@@ -50,6 +53,11 @@ namespace Dyspozytornia.dao
             return listOfTickets;
         }
 
+        public void createTicketNaive(SupplyTicket ticket)
+        {
+            throw new NotImplementedException();
+        }
+
         public void createTicketEntry(SupplyTicket ticket){
             String sql = "Insert into Supply (ShopId, ShopName, DeliveryDate, Status, isCompleted, Path)"
                     + "values(?, ?, ?, ?, ?, ?)";
@@ -58,7 +66,7 @@ namespace Dyspozytornia.dao
             String hour = ticket.getShopHour() + ":" + ticket.getShopMinute();
             int shopId = convertNameToId(ticket.getShopName());
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
 
             try {
                 connection = dataSource.getConnection();
@@ -92,7 +100,7 @@ namespace Dyspozytornia.dao
             int storeId = ticket.getStoreId();
             int driverId = ticket.getDriverId();
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
 
             try {
                 connection = dataSource.getConnection();
@@ -120,11 +128,16 @@ namespace Dyspozytornia.dao
             }
         }
 
+        public void createTicketEntry(SupplyTicket ticket)
+        {
+            throw new NotImplementedException();
+        }
+
         public String getShopsName(int shopsId) {
             String sql = "Select * from Shops where ShopId = ?";
             String shopName = "";
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             try {
                 connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -169,7 +182,7 @@ namespace Dyspozytornia.dao
         }
 
         private float executeLonSelect(int shopsId, String sql) {
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             float lon=0;
             try {
                 connection = dataSource.getConnection();
@@ -195,7 +208,7 @@ namespace Dyspozytornia.dao
         }
 
         private float executeLatSelect(int storeId, String sql) {
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             float lat=0;
             try {
                 connection = dataSource.getConnection();
@@ -225,7 +238,7 @@ namespace Dyspozytornia.dao
             int []drivers = new int[15];
             int driverCounter = 0;
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             try {
                 connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -261,7 +274,7 @@ namespace Dyspozytornia.dao
             ArrayList/*<SupplyTicket>*/ tickets = new ArrayList();
             foreach(int driverId in drivers){
                 String sql = "Select * from Supply where DriverId = ? and IsCompleted = FALSE ";
-                Connection connection = null;
+                DbLoggerCategory.Database.Connection connection = null;
                 try {
                     connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -290,14 +303,19 @@ namespace Dyspozytornia.dao
             }
             return tickets;
         }
-        
+
+        public void createTicketNew(SupplyTicket ticket)
+        {
+            throw new NotImplementedException();
+        }
+
         public void createTicketNew(SupplyTicket ticket) {
             String sql = "update Supply set StoreId = ?, DriverId = ?, DeliveryDate = ?, DurationTime = ?, Status = ?, Path = ? where SupplyId = ?";
 
             int storeId = ticket.getStoreId();
             int driverId = ticket.getDriverId();
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
 
             try {
                 connection = dataSource.getConnection();
@@ -328,7 +346,7 @@ namespace Dyspozytornia.dao
         private int checkSize(String tableName) {
             String sql = "Select * from " + tableName;
             int count = 0;
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             try {
                 connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -354,7 +372,7 @@ namespace Dyspozytornia.dao
         private int convertNameToId(String name) {
             String sql = "Select * from Shops where Name = ?";
 
-            Connection connection = null;
+            DbLoggerCategory.Database.Connection connection = null;
             int id = -1;
 
             try {

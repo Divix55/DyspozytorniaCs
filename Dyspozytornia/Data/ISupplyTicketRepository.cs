@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using Dyspozytornia.Models;
 
-namespace Dyspozytornia.dao
+namespace Dyspozytornia.Data
 {
-    public interface SupplyTicketDAO
+    public interface ISupplyTicketRepository
     {
         ArrayList createTicketTable();
         void createTicketNaive(SupplyTicket ticket);

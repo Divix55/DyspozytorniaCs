@@ -1,16 +1,25 @@
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections;
 using System.Text;
 using Dyspozytornia.Models;
 using Dyspozytornia.services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dyspozytornia.Controllers
 {
     public class SupplyController : Controller
     {
-        private readonly SupplyTicketService ticketService;
+        private readonly ISupplyTicketService ticketService;
+
+        public SupplyController()
+        {
+            ticketService = new SupplyTicketService();
+        }
+        
         [Route("/supply")]
+        [Authorize]
         public IActionResult Supply()
         {
             ArrayList supplyTickets = new ArrayList(ticketService.showTickets());
@@ -53,21 +62,24 @@ namespace Dyspozytornia.Controllers
             model.addAttribute("deliveryTicketFill", tableFill.ToString());
             return View();
         }
-        
+
         [Route("/acceptDelivery")]
+        [Authorize]
         public IActionResult AcceptDelivery()
         {
             return View();
         }
-        
+
         [Route("/supplyDeliveryRequest")]
-        public String SupplyDeliveryRequestGet()
+        [Authorize]
+        public string SupplyDeliveryRequestGet()
         {
             return "test";
         }
-        
+
         [Route("/supplyDeliveryRequest")]
-        public String SupplyDeliveryRequestPost()
+        [Authorize]
+        public string SupplyDeliveryRequestPost()
         {
             return "test";
         }
