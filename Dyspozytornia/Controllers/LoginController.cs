@@ -17,7 +17,7 @@ namespace Dyspozytornia.Controllers
 
         public LoginController()
         {
-            _loginService = new LoginService(new MySqlRepository());
+            _loginService = new LoginService(new LoginRepository());
         }
 
         [Route("/login")]
