@@ -2,6 +2,7 @@
     ViewData["Title"] = "Stores";
 }
 
+<body onLoad="load()">
 <main>
     <section class="mainBody">
         <div class="row">
@@ -20,13 +21,13 @@
                     </tr>
                     @Html.Raw(@ViewBag.table)
                 </table>
+                <div id="map" style="width: 500px; height: 500px;"></div>
             </div>
-            </div>
+        </div>
     </section>
 </main>
+</body>
 
-
-<div class="text-center">
-    <h1 class="display-4">Stores</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3WIk3vjEwjCUZgtvq6O0630P8-0LWho&callback=initMap&sensor=true">
+</script>

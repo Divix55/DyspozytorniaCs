@@ -1,8 +1,7 @@
 @{
     ViewData["Title"] = "Supply";
 }
-
-<body>
+<body onload="load()">
 <main>
     <section class="mainBody">
         <div class="row">
@@ -28,4 +27,7 @@
         </div>
     </section>
 </main>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3WIk3vjEwjCUZgtvq6O0630P8-0LWho&callback=initMap&sensor=true">
+</script>
 </body>

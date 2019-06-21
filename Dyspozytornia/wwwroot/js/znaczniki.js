@@ -48,17 +48,35 @@ function initMap(){
     };
     document.getElementById("myBtn").addEventListener("click", onChangeHandler);
 }
+
 function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+    var rows = document.getElementById("tabela_dostawy").getElementsByTagName("tr").length;
     var nr = document.getElementById("nr_dostawy").value;
-    var shoplat = document.getElementById("tabela_dostawy").rows[nr].cells[2].innerHTML;
-    var shoplng = document.getElementById("tabela_dostawy").rows[nr].cells[3].innerHTML;
-    var sklep = new google.maps.LatLng(shoplat, shoplng);
+
     var storelat = document.getElementById("tabela_dostawy").rows[nr].cells[4].innerHTML;
     var storelng = document.getElementById("tabela_dostawy").rows[nr].cells[5].innerHTML;
     var magazyn = new google.maps.LatLng(storelat, storelng);
+    var przystanki = [];
+
+    for(var i=nr;i<rows;i++)
+    {
+        var trasa = document.getElementById("tabela_dostawy").rows[i].cells[11].innerHTML;
+        if(trasa == nr)
+        {
+            var shoplat = document.getElementById("tabela_dostawy").rows[i].cells[2].innerHTML;
+            var shoplng = document.getElementById("tabela_dostawy").rows[i].cells[3].innerHTML;
+            var sklep = new google.maps.LatLng(shoplat, shoplng);
+            przystanki.push({location: sklep, stopover: true});
+        }
+
+    }
+
+
     directionsService.route({
         origin: magazyn,
-        destination: sklep,
+        destination: magazyn,
+        waypoints: przystanki,
+        optimizeWaypoints: true,
         travelMode: 'DRIVING'
     }, function(response, status) {
         if (status === 'OK') {

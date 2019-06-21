@@ -64,8 +64,8 @@ namespace Dyspozytornia.Data
         //}
 
         public void createTicketEntry(SupplyTicket ticket){
-            String sql = "Insert into Supply (ShopId, ShopName, DeliveryDate, Status, isCompleted, Path)"
-                    + "values(?ShopId, ?ShopName, ?DeliveryDate, ?Status, ?isCompleted, ?Path)";
+            String sql = "Insert into Supply (StoreId, ShopId, ShopName, DriverId, DeliveryDate, DurationTime, Status, isCompleted, Path)"
+                    + "values(?StoreId, ?ShopId, ?ShopName, ?DriverId, ?DeliveryDate, ?DurationTime, ?Status, ?isCompleted, ?Path)";
 
             String date = ticket.getShopYear() + "-" + ticket.getShopMonth() + "-" + ticket.getShopDay();
             String hour = ticket.getShopHour() + ":" + ticket.getShopMinute();
@@ -82,9 +82,12 @@ namespace Dyspozytornia.Data
 
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
+                cmd.Parameters.Add("?StoreId", MySqlDbType.Int32).Value = 1;
                 cmd.Parameters.Add("?ShopId", MySqlDbType.Int32).Value = shopId;
                 cmd.Parameters.Add("?ShopName", MySqlDbType.String).Value = ticket.getShopName();
+                cmd.Parameters.Add("?DriverId", MySqlDbType.Int32).Value = 1;
                 cmd.Parameters.Add("?DeliveryDate", MySqlDbType.String).Value = date + " " + hour;
+                cmd.Parameters.Add("?DurationTime", MySqlDbType.Int32).Value = 1;
                 cmd.Parameters.Add("?Status", MySqlDbType.String).Value = "oczekujace";
                 cmd.Parameters.Add("?isCompleted", MySqlDbType.Bool).Value = completed;
                 cmd.Parameters.Add("?Path", MySqlDbType.Int32).Value = -1;
@@ -189,7 +192,6 @@ namespace Dyspozytornia.Data
         }
 
         private float executeLonSelect(int shopsId, String sql) {
-            DbLoggerCategory.Database.Connection connection = null;
             float lon=0;
             var conn = Connect();
             conn.Open();
@@ -217,7 +219,6 @@ namespace Dyspozytornia.Data
         }
 
         private float executeLatSelect(int storeId, String sql) {
-            DbLoggerCategory.Database.Connection connection = null;
             float lat=0;
             float lon=0;
             var conn = Connect();
@@ -230,7 +231,7 @@ namespace Dyspozytornia.Data
 
                 var resultSet = cmd.ExecuteReader();
                 if (resultSet.Read()) {
-                    lon = resultSet.GetFloat("Latitude");
+                    lat = resultSet.GetFloat("Latitude");
                 }
                 conn.Close();
             }
