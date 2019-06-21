@@ -2,15 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Dyspozytornia.Models;
-using Dyspozytornia.Service;
-using Dyspozytornia.services;
+using Dyspozytornia.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Dyspozytornia.Controllers
 {
