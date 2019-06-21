@@ -143,7 +143,7 @@ namespace Dyspozytornia.Controllers
                 ticket.Distance = distance;
                 ticket.DriverId = 1;
                 ticket.StoreId = finalDistanceMap.ElementAt(0).Key;
-                ticket.DeliveryDate = "date";
+                ticket.DeliveryDate = _ticketService.GetTicketDateById((int)ticketId);
 
                 if (n == 0)
                     pathId = (int) ticketId;

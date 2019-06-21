@@ -373,6 +373,41 @@ namespace Dyspozytornia.Data
             return tickets;
         }
 
+        public string GetTicketDateById(int ticketId)
+        {
+            var ticketDate = "";
+
+            const string sql = "Select DeliveryDate from Supply where SupplyId = ?ticketId and IsCompleted = FALSE ";
+            var conn = Connect();
+            conn.Open();
+
+            try
+            {
+                var cmd = new MySqlCommand(sql, conn);
+                cmd.Prepare();
+                cmd.Parameters.Add("?ticketId", MySqlDbType.VarChar).Value = ticketId;
+
+                var resultSet = cmd.ExecuteReader();
+
+                if (resultSet.Read())
+                {
+                    ticketDate = resultSet.GetString("DeliveryDate");
+                }
+
+                conn.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error when executing method " +
+                                  MethodBase.GetCurrentMethod().Name +
+                                  ". Possible Cause: " + e.Message);
+                conn.Close();
+            }
+            
+            return ticketDate;
+
+        }
+
         private int CheckSize(string tableName) {
             var sql = "Select * from " + tableName;
             var count = 0;

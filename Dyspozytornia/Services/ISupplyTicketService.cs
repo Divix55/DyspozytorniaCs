@@ -18,5 +18,6 @@ namespace Dyspozytornia.Services
         ArrayList GetTicketsByDrivers(int[] drivers);
         void CreateTicketNew(SupplyTicket ticket);
         ArrayList GetPendingTickets();
+        string GetTicketDateById(int ticketId);
     }
 }

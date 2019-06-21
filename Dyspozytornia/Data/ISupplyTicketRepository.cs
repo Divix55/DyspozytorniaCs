@@ -20,5 +20,6 @@ namespace Dyspozytornia.Data
 
         void CreateTicketNew(SupplyTicket ticket);
         ArrayList GetAllPendingTickets();
+        string GetTicketDateById(int ticketId);
     }
 }

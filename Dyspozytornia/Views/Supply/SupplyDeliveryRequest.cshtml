@@ -2,10 +2,12 @@
     ViewData["Title"] = "SupplyDeliveryRequest";
 }
 
-<section class="mainBody">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="mainText">
+<body>
+<main>
+    <section class="mainBody">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="mainText">
                     
                 @using (Html.BeginForm())
                 {
@@ -16,27 +18,27 @@
                         })
                         Wybierz sklep:
                         <select name="sklep">
-                            @Html.Raw(ViewBag.shopIdOptions)
+                            @Html.Raw(@ViewBag.shopIdOptions)
                         </select>
                         Dzien:
                         <select name="dzien">
-                            @Html.Raw(ViewBag.shopDay)
+                            @Html.Raw(@ViewBag.shopDay)
                         </select>
                         Miesiąc:
                         <select name="miesiac">
-                            @Html.Raw(ViewBag.shopMonth)
+                            @Html.Raw(@ViewBag.shopMonth)
                         </select>
                         Rok:
                         <select name="rok">
-                            @Html.Raw(ViewBag.shopYear)
+                            @Html.Raw(@ViewBag.shopYear)
                         </select>
                         Godzina:
                         <select name="godzina">
-                            @Html.Raw(ViewBag.shopHour)
+                            @Html.Raw(@ViewBag.shopHour)
                         </select>
                         Minuta:
                         <select name="minuta">
-                            @Html.Raw(ViewBag.shopMinute)
+                            @Html.Raw(@ViewBag.shopMinute)
                         </select>
                         
                         <div class="form-group">
@@ -48,7 +50,9 @@
                     </div>
                 }
                     
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
+</body>

@@ -62,5 +62,10 @@ namespace Dyspozytornia.Services
         {
             return _supplyTicketRepository.GetAllPendingTickets();
         }
+
+        public string GetTicketDateById(int ticketId)
+        {
+            return _supplyTicketRepository.GetTicketDateById(ticketId);
+        }
     }
 }
