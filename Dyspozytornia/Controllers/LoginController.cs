@@ -33,7 +33,7 @@ namespace Dyspozytornia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(User loginUser)
         {
-            if (!loginUser.isValidLogin()) return View();
+            if (!loginUser.IsValidLogin()) return View();
 
             if (await _loginService.Authenticate(loginUser.UserName, loginUser.UserPassword))
             {
