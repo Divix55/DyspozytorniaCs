@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace Dyspozytornia.services
+namespace Dyspozytornia.Services
 {
     public class UtilsService
     {
