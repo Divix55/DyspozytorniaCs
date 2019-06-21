@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using Dyspozytornia.Data;
 using Dyspozytornia.Models;
-// Dd
-namespace Dyspozytornia.services
+
+namespace Dyspozytornia.Service
 {
     public class SupplyTicketService: ISupplyTicketService
     {
@@ -55,7 +55,7 @@ namespace Dyspozytornia.services
         }
 
         public void createTicketNew(SupplyTicket ticket) {
-            this._supplyTicketRepository.createTicketNew(ticket);
+            _supplyTicketRepository.createTicketNew(ticket);
         }
     }
 }
