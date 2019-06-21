@@ -2,6 +2,30 @@
     ViewData["Title"] = "Stores";
 }
 
+<main>
+    <section class="mainBody">
+        <div class="row">
+            <div class="title"><h1>Magazyny</h1></div>
+
+            <div class="col-sm-12 mainText">
+                <table>
+                    <tr>
+                        <th style="width: 10%"> Nazwa punktu </th>
+                        <th style="display:none">Szerokosc geogr.</th>
+                        <th style="display:none">Dlugosc geogr.</th>
+                        <th> NIP </th>
+                        <th> Miasto </th>
+                        <th> Adres </th>
+                        <th> Lokal </th>
+                    </tr>
+                    @Html.Raw(@ViewBag.table)
+                </table>
+            </div>
+            </div>
+    </section>
+</main>
+
+
 <div class="text-center">
     <h1 class="display-4">Stores</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
