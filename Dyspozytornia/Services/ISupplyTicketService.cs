@@ -6,17 +6,16 @@ namespace Dyspozytornia.Services
 {
     public interface ISupplyTicketService
     {
-        ArrayList showTickets();
-        void createTicketNaive(SupplyTicket ticket);
-        void createTicketEntry(SupplyTicket ticket);
-        String getShopsName(int shopId);
-        float getShopsLon(int shopId);
-        float getShopsLat(int shopId);
-        float getStoreLat(int storeId);
-        float getStoreLon(int storeId);
-        int[] getDriversByStoreId(int storeId);
-        ArrayList getTicketsByDrivers(int[] drivers);
-
-        void createTicketNew(SupplyTicket ticket);
+        ArrayList ShowTickets();
+        void CreateTicketNaive(SupplyTicket ticket);
+        void CreateTicketEntry(SupplyTicket ticket);
+        String GetShopsName(int shopId);
+        float GetShopsLon(int shopId);
+        float GetShopsLat(int shopId);
+        float GetStoreLat(int storeId);
+        float GetStoreLon(int storeId);
+        int[] GetDriversByStoreId(int storeId);
+        ArrayList GetTicketsByDrivers(int[] drivers);
+        void CreateTicketNew(SupplyTicket ticket);
     }
 }

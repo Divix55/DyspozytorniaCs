@@ -7,55 +7,55 @@ namespace Dyspozytornia.Services
 {
     public class SupplyTicketService: ISupplyTicketService
     {
-        private ISupplyTicketRepository _supplyTicketRepository;
+        private readonly ISupplyTicketRepository _supplyTicketRepository;
 
         public SupplyTicketService()
         {
             _supplyTicketRepository = new SupplyTicketRepository();
         }
 
-        public ArrayList/*<SupplyTicket>*/ showTickets() {
-            return _supplyTicketRepository.createTicketTable();
+        public ArrayList ShowTickets() {
+            return _supplyTicketRepository.CreateTicketTable();
         }
 
-        public void createTicketNaive(SupplyTicket ticket) {
-            _supplyTicketRepository.createTicketNaive(ticket);
+        public void CreateTicketNaive(SupplyTicket ticket) {
+            _supplyTicketRepository.CreateTicketNaive(ticket);
         }
 
-        public void createTicketEntry(SupplyTicket ticket) {
-            _supplyTicketRepository.createTicketEntry(ticket);
+        public void CreateTicketEntry(SupplyTicket ticket) {
+            _supplyTicketRepository.CreateTicketEntry(ticket);
         }
 
-        public String getShopsName(int shopId) { return _supplyTicketRepository.getShopsName(shopId); }
+        public String GetShopsName(int shopId) { return _supplyTicketRepository.GetShopsName(shopId); }
 
-        public float getShopsLon(int shopId) {
-            return _supplyTicketRepository.getShopsLon(shopId);
+        public float GetShopsLon(int shopId) {
+            return _supplyTicketRepository.GetShopsLon(shopId);
         }
 
-        public float getShopsLat(int shopId) {
-            return _supplyTicketRepository.getShopsLat(shopId);
+        public float GetShopsLat(int shopId) {
+            return _supplyTicketRepository.GetShopsLat(shopId);
         }
 
 
-        public float getStoreLat(int storeId){
-            return _supplyTicketRepository.getStoreLat(storeId);
+        public float GetStoreLat(int storeId){
+            return _supplyTicketRepository.GetStoreLat(storeId);
 
         }
 
-        public float getStoreLon(int storeId){
-            return _supplyTicketRepository.getStoreLon(storeId);
+        public float GetStoreLon(int storeId){
+            return _supplyTicketRepository.GetStoreLon(storeId);
         }
 
-        public int[] getDriversByStoreId(int storeId) {
-            return _supplyTicketRepository.getDriversByStoreId(storeId);
+        public int[] GetDriversByStoreId(int storeId) {
+            return _supplyTicketRepository.GetDriversByStoreId(storeId);
         }
 
-        public ArrayList/*<SupplyTicket>*/ getTicketsByDrivers(int[] drivers) {
-            return _supplyTicketRepository.getTicketsByDrivers(drivers);
+        public ArrayList GetTicketsByDrivers(int[] drivers) {
+            return _supplyTicketRepository.GetTicketsByDrivers(drivers);
         }
 
-        public void createTicketNew(SupplyTicket ticket) {
-            _supplyTicketRepository.createTicketNew(ticket);
+        public void CreateTicketNew(SupplyTicket ticket) {
+            _supplyTicketRepository.CreateTicketNew(ticket);
         }
     }
 }

@@ -1,0 +1,143 @@
+@model NewMapPointer
+@{
+    ViewData["Title"] = "MapPointerRegister";
+}
+
+<section class="mainBody">
+    <div class="row">
+        DUPA
+        <div class="col-sm-12">
+            <div class="mainText">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new
+                        {
+                            @class = "text-danger"
+                        })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointName, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointName, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointName, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.nip, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.nip, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.nip, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointCity, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointCity, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointCity, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointAddress, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointAddress, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointAddress, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointAddressBlockNumber, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointAddressBlockNumber, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointAddressBlockNumber, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointLongitude, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointLongitude, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointLongitude, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.pointLatitude, new
+                            {
+                                @class = "col-md-2"
+                            })
+                            <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-centered">
+                                @Html.TextBoxFor(model => model.pointLatitude, new
+                                {
+                                    @class = "form-control"
+                                })
+                                @Html.ValidationMessageFor(model => model.pointLatitude, "", new
+                                {
+                                    @class = "text-danger"
+                                })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <input type="submit" value="Rejestruj" class="btn"/>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

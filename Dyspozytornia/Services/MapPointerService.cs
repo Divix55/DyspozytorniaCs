@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Dyspozytornia.Data;
 using Dyspozytornia.Models;
 
@@ -7,22 +8,22 @@ namespace Dyspozytornia.Services
 {
     public class MapPointerService : IMapPointerService
     {
-        private IMapPointerRepository imapPointerRepository;
+        private readonly IMapPointerRepository _iMapPointerRepository;
 
         public MapPointerService()
         {
-            imapPointerRepository = new MapPointerRepository();
+            _iMapPointerRepository = new MapPointerRepository();
         }
         
-        public ArrayList showStoreTable() {return imapPointerRepository.createStoreTable(); }
-        public ArrayList showShopTable() {return imapPointerRepository.createShopTable(); }
+        public ArrayList ShowStoreTable() {return _iMapPointerRepository.CreateStoreTable(); }
+        public ArrayList ShowShopTable() {return _iMapPointerRepository.CreateShopTable(); }
 
-        public void createMapPointer(NewMapPointer mapPointer, String typeOfPoint) {
-            this.imapPointerRepository.createMapPointer(mapPointer, typeOfPoint);
+        public async Task CreateMapPointer(NewMapPointer mapPointer, string typeOfPoint) { 
+            await Task.Run(() => _iMapPointerRepository.CreateMapPointer(mapPointer, typeOfPoint));
         }
 
-        public NewMapPointer getPointerByName(String shopName) {
-            return imapPointerRepository.getPointerByName(shopName);
+        public NewMapPointer GetPointerByName(string shopName) {
+            return _iMapPointerRepository.GetPointerByName(shopName);
         }
     }
 }

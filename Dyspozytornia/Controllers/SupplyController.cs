@@ -11,21 +11,21 @@ namespace Dyspozytornia.Controllers
 {
     public class SupplyController : Controller
     {
-        private readonly ISupplyTicketService ticketService;
-        private readonly MapPointerService pointerService;
+        private readonly ISupplyTicketService _ticketService;
+        private readonly MapPointerService _pointerService;
         private readonly int MAX_TICKETS_PER_DRIVER = 3;
 
-        public SupplyController()//SupplyTicketService ticketService, MapPointerService pointerService)
+        public SupplyController()
         {
-            this.ticketService = new SupplyTicketService();
-            this.pointerService = new MapPointerService();
+            _ticketService = new SupplyTicketService();
+            _pointerService = new MapPointerService();
         }
         
         [Route("/supply")]
         [Authorize]
         public IActionResult Supply()
         {
-            ArrayList supplyTickets = new ArrayList(ticketService.showTickets());
+            ArrayList supplyTickets = new ArrayList(_ticketService.ShowTickets());
             StringBuilder tableFill = new StringBuilder("Obecnie nie mamy zadnych zamowien");
 
             if(supplyTickets.Count>0) {
@@ -43,19 +43,19 @@ namespace Dyspozytornia.Controllers
                         "<th>Numer trasy</th>" +
                         "</tr>\n");
                 foreach (SupplyTicket ticket in supplyTickets) {
-                    if (!ticket.isComplet()) {
-                        String shopName = ticketService.getShopsName(ticket.getShopId());
-                        float shopLon = ticketService.getShopsLon(ticket.getShopId());
-                        float shopLat = ticketService.getShopsLat(ticket.getShopId());
-                        float storeLon = ticketService.getStoreLon(ticket.getStoreId());
-                        float storeLat = ticketService.getStoreLat(ticket.getStoreId());
+                    if (!ticket.isCompleted) {
+                        String shopName = _ticketService.GetShopsName(ticket.shopId);
+                        float shopLon = _ticketService.GetShopsLon(ticket.shopId);
+                        float shopLat = _ticketService.GetShopsLat(ticket.shopId);
+                        float storeLon = _ticketService.GetStoreLon(ticket.shopId);
+                        float storeLat = _ticketService.GetStoreLat(ticket.shopId);
     
-                        String htmlTag = "<tr><td>" + ticket.getTicketId() + "</td><td>" + shopName +
+                        String htmlTag = "<tr><td>" + ticket.ticketId + "</td><td>" + shopName +
                                 "</td><td style='display: none'>" + shopLon + "</td><td style='display: none'>" + shopLat +
                                 "</td><td style='display: none'>" + storeLon + "</td><td style='display: none'>" + storeLat +
-                                "</td><td>" + ticket.getStoreId() + "</td><td>"+ ticket.getDriverId() +"</td><td>"+
-                                ticket.getDuration() + "</td><td>" + ticket.getTicketStatus() + "</td><td>"+
-                                ticket.getDeliveryDate() + "</td><td>" + ticket.getPath() + "</td></tr>\n";
+                                "</td><td>" + ticket.storeId + "</td><td>"+ ticket.driverId +"</td><td>"+
+                                ticket.duration + "</td><td>" + ticket.ticketStatus + "</td><td>"+
+                                ticket.deliveryDate + "</td><td>" + ticket.path + "</td></tr>\n";
                         tableFill.Append(htmlTag);
                     }
                 }
@@ -74,14 +74,14 @@ namespace Dyspozytornia.Controllers
             //struktura wygląda następująco:        Map< STORE_ID, Map< DISTANCE, Map< TICKET_ID_LIST, SHOP_ID_LIST( == PATH) >>>
             Dictionary<int, Dictionary<Double, Dictionary<ArrayList, ArrayList>>> finalDistanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
 
-            ArrayList allWarehouses = pointerService.showStoreTable();
+            ArrayList allWarehouses = _pointerService.ShowStoreTable();
 
             ArrayList nextFewTickets = new ArrayList();
 
             int ticketCounter = 0;
             foreach(SupplyTicket ticket in supplyTickets) {
                 //log.info(ticket.toString());
-                if (!ticket.getTicketStatus().Equals("oczekujace"))
+                if (ticket.ticketStatus != "oczekujace")
                     continue;
                 if (ticketCounter == MAX_TICKETS_PER_DRIVER)
                     break;
@@ -89,17 +89,12 @@ namespace Dyspozytornia.Controllers
                 ticketCounter++;
             }
 
-            //log.info("" + nextFewTickets.size());
-
-
             Dictionary<int, Dictionary<Double, Dictionary<ArrayList, ArrayList>>> distanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
             foreach(NewMapPointer warehouse in allWarehouses){
-                //log.info(warehouse.toString());
-                //map of <Distance, <[ticketIds] [path]>>
                 Dictionary<Double, Dictionary<ArrayList, ArrayList>> distance_path_map;
-                distance_path_map = calculateShortestDistanceAndPath(nextFewTickets, warehouse);
+                distance_path_map = CalculateShortestDistanceAndPath(nextFewTickets, warehouse);
 
-                distanceMap[warehouse.getPointId()] = distance_path_map;
+                distanceMap[warehouse.pointId] = distance_path_map;
             }
 
             double shortestDistance = 10000;
@@ -117,33 +112,31 @@ namespace Dyspozytornia.Controllers
             finalDistanceMap.GetEnumerator().MoveNext();
             finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().MoveNext();
             Dictionary<ArrayList, ArrayList> sicketId_and_path =
-                finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Value;//..entrySet().iterator().next().getValue().entrySet().iterator().next().getValue();
+                finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Value;
 
-            ArrayList ticketIdList = sicketId_and_path.GetEnumerator().Current.Key;//.iterator().next().getKey();
-            ArrayList pathList = sicketId_and_path.GetEnumerator().Current.Value;//.iterator().next().getValue();
+            ArrayList ticketIdList = sicketId_and_path.GetEnumerator().Current.Key;
+            ArrayList pathList = sicketId_and_path.GetEnumerator().Current.Value;
             int pathId = -1;
             for(int n = 0; n < MAX_TICKETS_PER_DRIVER; n++){
                 int shopId = pathList.IndexOf(n);
                 int ticketId = ticketIdList.IndexOf(n);
                 SupplyTicket ticket = new SupplyTicket();
-                ticket.setShopId(shopId);
-                ticket.setTicketId(ticketId);
-                ticket.setShopName(ticketService.getShopsName(shopId));
-                ticket.setTicketStatus("w realizacji");
+                ticket.shopId = shopId;
+                ticket.ticketId = ticketId;
+                ticket.shopName = _ticketService.GetShopsName(shopId);
+                ticket.ticketStatus = "w realizacji";
                 //to powinno brać odległość
-                double distance = finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Key;//.iterator().next().getValue().entrySet().iterator().next().getKey();
-                ticket.setDuration(UtilsService.calculateDuration(distance));
-                ticket.setDistance(distance);
-                ticket.setDriverId(1);
-                ticket.setStoreId(finalDistanceMap.GetEnumerator().Current.Key);//.iterator().next().getKey());
-                ticket.setDeliveryDate("date");
+                double distance = finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Key;
+                ticket.duration = UtilsService.CalculateDuration(distance);
+                ticket.distance = distance;
+                ticket.driverId = 1;
+                ticket.storeId = finalDistanceMap.GetEnumerator().Current.Key;
+                ticket.deliveryDate = "date";
                 
                 if(n==0)
                     pathId = ticketId;
-                ticket.setPath(pathId);
-                //log.info("Updating: ");
-                //log.info(ticket.toString());
-                ticketService.createTicketNew(ticket);
+                ticket.path = pathId;
+                _ticketService.CreateTicketNew(ticket);
             }
             
 
@@ -153,9 +146,9 @@ namespace Dyspozytornia.Controllers
         [Route("/supplyDeliveryRequest")]
         [Authorize]
         [HttpGet]
-        public IActionResult SupplyDeliveryRequest()//SupplyDeliveryRequestGet()
+        public IActionResult SupplyDeliveryRequest()
         {
-            ArrayList shopList = pointerService.showShopTable();
+            ArrayList shopList = _pointerService.ShowShopTable();
             StringBuilder shopOptions = new StringBuilder();
             StringBuilder shopDay = new StringBuilder();
             StringBuilder shopMonth = new StringBuilder();
@@ -164,7 +157,7 @@ namespace Dyspozytornia.Controllers
             StringBuilder shopMinute = new StringBuilder();
 
             foreach(NewMapPointer shop in shopList){
-                String htmlTag = "<option>" + shop.getPointName() + "</option>";
+                String htmlTag = "<option>" + shop.pointName + "</option>";
                 shopOptions.Append(htmlTag);
             }
 
@@ -195,22 +188,17 @@ namespace Dyspozytornia.Controllers
             ViewBag.shopHour = shopHour.ToString();
             ViewBag.shopMinute = shopMinute.ToString();
             return View();
-            //return "supplyDeliveryRequest";
         }
 
         [Route("/supplyDeliveryRequest")]
         [HttpPost]
         [Authorize]
-        public String checkMapPointerRegister(SupplyTicket ticket){
-            ticketService.createTicketEntry(ticket);
+        public String CheckMapPointerRegister(SupplyTicket ticket){
+            _ticketService.CreateTicketEntry(ticket);
             return "redirect:/supply";
         }
-        //public string SupplyDeliveryRequestPost()
-        //{
-        //    return "test";
-        //}
-        
-        private Dictionary<Double, Dictionary<ArrayList, ArrayList>> calculateShortestDistanceAndPath(ArrayList tickets,
+
+        private Dictionary<Double, Dictionary<ArrayList, ArrayList>> CalculateShortestDistanceAndPath(ArrayList tickets,
                                                                               NewMapPointer warehouse){
         Dictionary<Double, Dictionary<ArrayList, ArrayList>> distance_path_map = new Dictionary<double, Dictionary<ArrayList, ArrayList>>();
 
@@ -218,17 +206,15 @@ namespace Dyspozytornia.Controllers
         ArrayList ticketIds = new ArrayList();
         double shortestDistance = 1000;
         foreach(SupplyTicket ticket in tickets){
-            ticketIds.Add(ticket.getTicketId());
+            ticketIds.Add(ticket.ticketId);
 
             ArrayList deliveryPath = new ArrayList();
 
-            String shopName = ticketService.getShopsName(ticket.getShopId());
-            NewMapPointer shop1 = pointerService.getPointerByName(shopName);
-            //log.info(":x");
-            //log.info(shop1.toString());
-            //log.info(warehouse.toString());
-            double distance = UtilsService.calculateDistanceInStraightLine(warehouse, shop1);
-            deliveryPath.Add(shop1.getPointId());
+            String shopName = _ticketService.GetShopsName(ticket.shopId);
+            NewMapPointer shop1 = _pointerService.GetPointerByName(shopName);
+
+            double distance = UtilsService.CalculateDistanceInStraightLine(warehouse, shop1);
+            deliveryPath.Add(shop1.pointId);
 
             SupplyTicket ticket2 = new SupplyTicket();
             SupplyTicket ticket3 = new SupplyTicket();
@@ -247,33 +233,33 @@ namespace Dyspozytornia.Controllers
                 ticket2 = (SupplyTicket)tickets[0];
                 ticket3 = (SupplyTicket)tickets[1];
             }
-            String shopName2 = ticketService.getShopsName(ticket2.getShopId());
-            String shopName3 = ticketService.getShopsName(ticket3.getShopId());
+            String shopName2 = _ticketService.GetShopsName(ticket2.shopId);
+            String shopName3 = _ticketService.GetShopsName(ticket3.shopId);
 
-            NewMapPointer shop2 = pointerService.getPointerByName(shopName2);
-            NewMapPointer shop3 = pointerService.getPointerByName(shopName3);
+            NewMapPointer shop2 = _pointerService.GetPointerByName(shopName2);
+            NewMapPointer shop3 = _pointerService.GetPointerByName(shopName3);
 
-            double distance2 = UtilsService.calculateDistanceInStraightLine(shop1, shop2);
-            double distance3 = UtilsService.calculateDistanceInStraightLine(shop1, shop3);
+            double distance2 = UtilsService.CalculateDistanceInStraightLine(shop1, shop2);
+            double distance3 = UtilsService.CalculateDistanceInStraightLine(shop1, shop3);
 
             double closer = Math.Min(distance2, distance3);
 
             distance += closer;
 
-            distance += UtilsService.calculateDistanceInStraightLine(shop2, shop3);
+            distance += UtilsService.CalculateDistanceInStraightLine(shop2, shop3);
             NewMapPointer lastShop = new NewMapPointer();
             if(distance2 == closer) {
                 lastShop = shop3;
-                deliveryPath.Add(shop2.getPointId());
-                deliveryPath.Add(shop3.getPointId());
+                deliveryPath.Add(shop2.pointId);
+                deliveryPath.Add(shop3.pointId);
             }
             else {
                 lastShop = shop2;
-                deliveryPath.Add(shop3.getPointId());
-                deliveryPath.Add(shop2.getPointId());
+                deliveryPath.Add(shop3.pointId);
+                deliveryPath.Add(shop2.pointId);
             }
 
-            distance += UtilsService.calculateDistanceInStraightLine(lastShop, warehouse);
+            distance += UtilsService.CalculateDistanceInStraightLine(lastShop, warehouse);
 
             if(distance < shortestDistance){
                 shortestDistance = distance;
@@ -288,20 +274,20 @@ namespace Dyspozytornia.Controllers
         return distance_path_map;
 
     }
-        private ArrayList calculateWarehousesByTime(ArrayList warehouses,
+        private ArrayList CalculateWarehousesByTime(ArrayList warehouses,
                                                                String date,
                                                                String hour,
                                                                NewMapPointer whereToDeliver){
             ArrayList calculatedWarehouses = new ArrayList();
             foreach(NewMapPointer store in warehouses){
                 //function picks first suitable
-                double distance = UtilsService.calculateDistanceInStraightLine(whereToDeliver, store);
-                int availableDrivers = checkAvailableDrivers(store.getPointId(), distance, date, hour);
+                double distance = UtilsService.CalculateDistanceInStraightLine(whereToDeliver, store);
+                int availableDrivers = CheckAvailableDrivers(store.pointId, distance, date, hour);
                 if (availableDrivers != 0) {
 
                     Warehouse calculatedStore = new Warehouse();
                     calculatedStore.setAvailableDrivers(availableDrivers);
-                    calculatedStore.setStoreId(store.getPointId());
+                    calculatedStore.setStoreId(store.pointId);
                     calculatedStore.setDistance(distance);
                     calculatedStore.setDriverId(availableDrivers);
 
@@ -311,12 +297,12 @@ namespace Dyspozytornia.Controllers
             return calculatedWarehouses;
         }
 
-        private int checkAvailableDrivers(int storeId, double distance, String deliveryDate, String deliveryHour){
-            int[] drivers = ticketService.getDriversByStoreId(storeId);
-            double deliveryDuration = UtilsService.calculateDuration(distance);
-            ArrayList driversTickets = ticketService.getTicketsByDrivers(drivers);
+        private int CheckAvailableDrivers(int storeId, double distance, String deliveryDate, String deliveryHour){
+            int[] drivers = _ticketService.GetDriversByStoreId(storeId);
+            double deliveryDuration = UtilsService.CalculateDuration(distance);
+            ArrayList driversTickets = _ticketService.GetTicketsByDrivers(drivers);
             foreach(int driver in drivers){
-                bool ifAvailableForDelivery = checkAvailability(driver, driversTickets, deliveryDate, deliveryHour, deliveryDuration);
+                bool ifAvailableForDelivery = CheckAvailability(driver, driversTickets, deliveryDate, deliveryHour, deliveryDuration);
                 if(ifAvailableForDelivery){
                     return driver;
                 }
@@ -325,15 +311,15 @@ namespace Dyspozytornia.Controllers
             return 0;
         }
 
-        private bool checkAvailability(int driverId,
+        private bool CheckAvailability(int driverId,
                                                  ArrayList driversTickets,
                                                  String deliveryDate,
                                                  String deliveryHour,
                                                  double deliveryDuration) {
             foreach(SupplyTicket ticket in driversTickets){
-                if (ticket.getDriverId() == driverId){
-                    String ticketFullDate = ticket.getDeliveryDate().Split(" ")[0];
-                    String ticketFullTime = ticket.getDeliveryDate().Split(" ")[1];
+                if (ticket.driverId == driverId){
+                    String ticketFullDate = ticket.deliveryDate.Split(" ")[0];
+                    String ticketFullTime = ticket.deliveryDate.Split(" ")[1];
                     if (ticketFullDate.Equals(deliveryDate)){
                         String[] deliveryFullTime = deliveryHour.Split((":"));
                         String[] ticketTime = ticketFullTime.Split((":"));
@@ -345,7 +331,7 @@ namespace Dyspozytornia.Controllers
                         //in minutes
                         int difference = 60 * (Math.Abs(deliveryHourInt - ticketHourInt)) +
                                 (Math.Abs(deliveryMinuteInt - ticketMinuteInt));
-                        if((difference - deliveryDuration) - ticket.getDuration() < 0){
+                        if((difference - deliveryDuration) - ticket.duration < 0){
                             return false;
                         }
                     }

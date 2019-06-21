@@ -6,21 +6,21 @@ namespace Dyspozytornia.Services
 {
     public class LoginService : ILoginService
     {
-        private readonly ILoginRepository dataSource;
+        private readonly ILoginRepository _dataSource;
 
         public LoginService(ILoginRepository dataSource)
         {
-            this.dataSource = dataSource;
+            _dataSource = dataSource;
         }
 
         public async Task<bool> Authenticate(string userName, string password)
         {
-            return await Task.Run(() => dataSource.LoginUser(userName, password));
+            return await Task.Run(() => _dataSource.LoginUser(userName, password));
         }
 
         public async Task<bool> Create(User user)
         {
-            return await Task.Run(() => dataSource.CreateUser(user));
+            return await Task.Run(() => _dataSource.CreateUser(user));
         }
     }
 }

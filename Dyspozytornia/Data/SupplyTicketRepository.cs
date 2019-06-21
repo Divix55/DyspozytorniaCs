@@ -9,42 +9,29 @@ namespace Dyspozytornia.Data
 {
     public class SupplyTicketRepository: ISupplyTicketRepository
     {
-        //private readonly DataSource dataSource;
-        //private BindingSource dataSource = new BindingSource();
-
-        public SupplyTicketRepository()
-        {
-            //this.dataSource = dataSource;
-        }
-
-        public ArrayList createTicketTable() {
+        public ArrayList CreateTicketTable() {
             
             var conn = Connect();
             conn.Open();
             var sql = "select * from Supply";
             
-            DbLoggerCategory.Database.Connection connection = null;
             ArrayList listOfTickets = new ArrayList();
 
             try{
-                //connection = dataSource.getConnection();
-                //PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
-                //ResultSet resultSet = preparedStatement.executeQuery();
                 var resultSet = cmd.ExecuteReader();   
                 while (resultSet.Read()) {
                     SupplyTicket newPoint = new SupplyTicket();
-                    newPoint.setTicketId(resultSet.GetInt32("SupplyId"));
-                    newPoint.setShopId(resultSet.GetInt32("ShopId"));
-                    newPoint.setStoreId(resultSet.GetInt32("StoreId"));
-                    newPoint.setDriverId(resultSet.GetInt32("DriverId"));
-                    newPoint.setDuration(resultSet.GetInt32("DurationTime"));
-                    newPoint.setDeliveryDate(resultSet.GetString("DeliveryDate"));
-                    newPoint.setTicketStatus(resultSet.GetString("Status"));
-                    newPoint.setCompleted(resultSet.GetBoolean("isCompleted"));
-                    newPoint.setPath(resultSet.GetInt32("Path"));
+                    newPoint.ticketId = resultSet.GetInt32("SupplyId");
+                    newPoint.shopId = resultSet.GetInt32("ShopId");
+                    newPoint.storeId = resultSet.GetInt32("StoreId");
+                    newPoint.driverId = resultSet.GetInt32("DriverId");
+                    newPoint.duration = resultSet.GetInt32("DurationTime");
+                    newPoint.deliveryDate = resultSet.GetString("DeliveryDate");
+                    newPoint.ticketStatus = resultSet.GetString("Status");
+                    newPoint.isCompleted = resultSet.GetBoolean("isCompleted");
+                    newPoint.path = resultSet.GetInt32("Path");
                     listOfTickets.Add(newPoint);
                 }
                 conn.Close();
@@ -58,32 +45,24 @@ namespace Dyspozytornia.Data
             return listOfTickets;
         }
 
-        //public void createTicketNaive(SupplyTicket ticket)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
-        public void createTicketEntry(SupplyTicket ticket){
+        public void CreateTicketEntry(SupplyTicket ticket){
             String sql = "Insert into Supply (ShopId, ShopName, DeliveryDate, Status, isCompleted, Path)"
                     + "values(?ShopId, ?ShopName, ?DeliveryDate, ?Status, ?isCompleted, ?Path)";
 
-            String date = ticket.getShopYear() + "-" + ticket.getShopMonth() + "-" + ticket.getShopDay();
-            String hour = ticket.getShopHour() + ":" + ticket.getShopMinute();
-            int shopId = convertNameToId(ticket.getShopName());
-
-            DbLoggerCategory.Database.Connection connection = null;
-
+            String date = ticket.shopYear + "-" + ticket.shopMonth + "-" + ticket.shopDay;
+            String hour = ticket.shopHour + ":" + ticket.shopMinute;
+            int shopId = ConvertNameToId(ticket.shopName);
+            
             var conn = Connect();
             conn.Open();
             try
             {
-
                 bool completed = false;
-
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
                 cmd.Parameters.Add("?ShopId", MySqlDbType.Int32).Value = shopId;
-                cmd.Parameters.Add("?ShopName", MySqlDbType.String).Value = ticket.getShopName();
+                cmd.Parameters.Add("?ShopName", MySqlDbType.String).Value = ticket.shopName;
                 cmd.Parameters.Add("?DeliveryDate", MySqlDbType.String).Value = date + " " + hour;
                 cmd.Parameters.Add("?Status", MySqlDbType.String).Value = "oczekujace";
                 cmd.Parameters.Add("?isCompleted", MySqlDbType.Bool).Value = completed;
@@ -101,13 +80,11 @@ namespace Dyspozytornia.Data
             }
         }
 
-        public void createTicketNaive(SupplyTicket ticket) {
+        public void CreateTicketNaive(SupplyTicket ticket) {
             String sql = "update Supply set StoreId = ?StoreId, DriverId = ?DriverId, DeliveryDate = ?DeliveryDate, DurationTime = ?DurationTime, Status = ?Status, Path = ?Path where SupplyId = ?SupplyId";
 
-            int storeId = ticket.getStoreId();
-            int driverId = ticket.getDriverId();
-
-            DbLoggerCategory.Database.Connection connection = null;
+            int storeId = ticket.storeId;
+            int driverId = ticket.driverId;
 
             var conn = Connect();
             conn.Open();
@@ -117,11 +94,11 @@ namespace Dyspozytornia.Data
                 cmd.Prepare();
                 cmd.Parameters.Add("?StoreId", MySqlDbType.Int32).Value = storeId;
                 cmd.Parameters.Add("?DriverId", MySqlDbType.Int32).Value = driverId;
-                cmd.Parameters.Add("?DeliveryDate", MySqlDbType.Int32).Value = ticket.getDeliveryDate();
-                cmd.Parameters.Add("?DurationTime", MySqlDbType.Int32).Value = ticket.getTicketStatus();
-                cmd.Parameters.Add("?Status", MySqlDbType.Int32).Value = ticket.getTicketStatus();
-                cmd.Parameters.Add("?Path", MySqlDbType.Int32).Value = ticket.getPath();
-                cmd.Parameters.Add("?SupplyId", MySqlDbType.Int32).Value = ticket.getTicketId();
+                cmd.Parameters.Add("?DeliveryDate", MySqlDbType.Int32).Value = ticket.deliveryDate;
+                cmd.Parameters.Add("?DurationTime", MySqlDbType.Int32).Value = ticket.duration;
+                cmd.Parameters.Add("?Status", MySqlDbType.Int32).Value = ticket.ticketStatus;
+                cmd.Parameters.Add("?Path", MySqlDbType.Int32).Value = ticket.path;
+                cmd.Parameters.Add("?SupplyId", MySqlDbType.Int32).Value = ticket.ticketId;
 
                 cmd.ExecuteNonQuery();
                 conn.Close();
@@ -135,18 +112,12 @@ namespace Dyspozytornia.Data
             }
         }
 
-        //public void createTicketEntry(SupplyTicket ticket)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public String getShopsName(int shopsId) {
-            String sql = "Select * from Shops where ShopId = ?ShopId";
+        public String GetShopsName(int shopsId) {
+            String sql = "Select * from Shops where ShopId = @ShopId";
             String shopName = "";
 
             var conn = Connect();
             conn.Open();
-            DbLoggerCategory.Database.Connection connection = null;
             try {
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
@@ -168,28 +139,27 @@ namespace Dyspozytornia.Data
             return shopName;
         }
 
-        public float getShopsLon(int shopsId) {
+        public float GetShopsLon(int shopsId) {
             String sql = "Select * from Shops where ShopId = ?";
-            return executeLonSelect(shopsId, sql);
+            return ExecuteLonSelect(shopsId, sql);
         }
 
-        public float getShopsLat(int shopsId) {
+        public float GetShopsLat(int shopsId) {
             String sql = "Select * from Shops where ShopId = ?";
-            return executeLatSelect(shopsId, sql);
+            return ExecuteLatSelect(shopsId, sql);
         }
 
-        public float getStoreLon(int storeId){
+        public float GetStoreLon(int storeId){
             String sql = "Select * from Stores where StoreId = ?";
-            return executeLonSelect(storeId, sql);
+            return ExecuteLonSelect(storeId, sql);
         }
 
-        public float getStoreLat(int storeId){
+        public float GetStoreLat(int storeId){
             String sql = "Select * from Stores where StoreId = ?";
-            return executeLatSelect(storeId, sql);
+            return ExecuteLatSelect(storeId, sql);
         }
 
-        private float executeLonSelect(int shopsId, String sql) {
-            DbLoggerCategory.Database.Connection connection = null;
+        private float ExecuteLonSelect(int shopsId, String sql) {
             float lon=0;
             var conn = Connect();
             conn.Open();
@@ -216,8 +186,7 @@ namespace Dyspozytornia.Data
             return lon;
         }
 
-        private float executeLatSelect(int storeId, String sql) {
-            DbLoggerCategory.Database.Connection connection = null;
+        private float ExecuteLatSelect(int storeId, String sql) {
             float lat=0;
             float lon=0;
             var conn = Connect();
@@ -245,14 +214,13 @@ namespace Dyspozytornia.Data
             return lat;
         }
 
-        public int[] getDriversByStoreId(int storeId) {
+        public int[] GetDriversByStoreId(int storeId) {
             String sql = "Select * from Drivers where StoreId = ?StoreId";
             int []drivers = new int[15];
             int driverCounter = 0;
             var conn = Connect();
             conn.Open();
-
-            DbLoggerCategory.Database.Connection connection = null;
+            
             try {
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
@@ -281,14 +249,13 @@ namespace Dyspozytornia.Data
             return d;
         }
 
-        public ArrayList getTicketsByDrivers(int[] drivers) {
+        public ArrayList GetTicketsByDrivers(int[] drivers) {
             ArrayList tickets = new ArrayList();
             foreach (int driverId in drivers)
             {
                 String sql = "Select * from Supply where DriverId = ?DriverId and IsCompleted = FALSE ";
                 var conn = Connect();
                 conn.Open();
-                DbLoggerCategory.Database.Connection connection = null;
 
                 try
                 {
@@ -300,11 +267,11 @@ namespace Dyspozytornia.Data
                     if (resultSet.Read())
                     {
                         SupplyTicket ticket = new SupplyTicket();
-                        ticket.setStoreId(resultSet.GetInt32("StoreId"));
-                        ticket.setShopId(resultSet.GetInt32("ShopId"));
-                        ticket.setDriverId(driverId);
-                        ticket.setDeliveryDate(resultSet.GetString("DeliveryDate"));
-                        ticket.setPath(resultSet.GetInt32("Path"));
+                        ticket.storeId = resultSet.GetInt32("StoreId");
+                        ticket.shopId = resultSet.GetInt32("ShopId");
+                        ticket.driverId = driverId;
+                        ticket.deliveryDate = resultSet.GetString("DeliveryDate");
+                        ticket.path = resultSet.GetInt32("Path");
                         tickets.Add(ticket);
                     }
 
@@ -322,30 +289,24 @@ namespace Dyspozytornia.Data
             return tickets;
         }
 
-        //public void createTicketNew(SupplyTicket ticket)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public void createTicketNew(SupplyTicket ticket) {
+        public void CreateTicketNew(SupplyTicket ticket) {
             String sql = "update Supply set StoreId = ?StoreId, DriverId = ?DriverId, DeliveryDate = ?DeliveryDate, DurationTime = ?DurationTime, Status = ?Status, Path = ?Path where SupplyId = ?SupplyId";
 
-            int storeId = ticket.getStoreId();
-            int driverId = ticket.getDriverId();
+            int storeId = ticket.storeId;
+            int driverId = ticket.driverId;
             var conn = Connect();
             conn.Open();
-            DbLoggerCategory.Database.Connection connection = null;
 
             try {
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
                 cmd.Parameters.Add("?StoreId", MySqlDbType.Int32).Value = storeId;
                 cmd.Parameters.Add("?DriverId", MySqlDbType.Int32).Value = driverId;
-                cmd.Parameters.Add("?DeliveryDate", MySqlDbType.Int32).Value = ticket.getDeliveryDate();
-                cmd.Parameters.Add("?DurationTime", MySqlDbType.Int32).Value = ticket.getDuration();
-                cmd.Parameters.Add("?Status", MySqlDbType.Int32).Value = ticket.getTicketStatus();
-                cmd.Parameters.Add("?Path", MySqlDbType.Int32).Value = ticket.getPath();
-                cmd.Parameters.Add("?SupplyId", MySqlDbType.Int32).Value = ticket.getTicketId();
+                cmd.Parameters.Add("?DeliveryDate", MySqlDbType.Int32).Value = ticket.deliveryDate;
+                cmd.Parameters.Add("?DurationTime", MySqlDbType.Int32).Value = ticket.duration;
+                cmd.Parameters.Add("?Status", MySqlDbType.Int32).Value = ticket.ticketStatus;
+                cmd.Parameters.Add("?Path", MySqlDbType.Int32).Value = ticket.path;
+                cmd.Parameters.Add("?SupplyId", MySqlDbType.Int32).Value = ticket.ticketId;
 
                 conn.Close();
             }
@@ -358,12 +319,11 @@ namespace Dyspozytornia.Data
             }
         }
 
-        private int checkSize(String tableName) {
+        private int CheckSize(String tableName) {
             String sql = "Select * from " + tableName;
             int count = 0;
             var conn = Connect();
             conn.Open();
-            DbLoggerCategory.Database.Connection connection = null;
             try {
                 var cmd = new MySqlCommand(sql, conn);
                 cmd.Prepare();
@@ -384,13 +344,12 @@ namespace Dyspozytornia.Data
             return count;
         }
 
-        private int convertNameToId(String name) {
+        private int ConvertNameToId(String name) {
             String sql = "Select * from Shops where Name = ?Name";
             int id = -1;
 
             var conn = Connect();
             conn.Open();
-            DbLoggerCategory.Database.Connection connection = null;
 
             try {
                 var cmd = new MySqlCommand(sql, conn);

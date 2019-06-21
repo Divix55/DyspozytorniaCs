@@ -6,17 +6,17 @@ namespace Dyspozytornia.Data
 {
     public interface ISupplyTicketRepository
     {
-        ArrayList createTicketTable();
-        void createTicketNaive(SupplyTicket ticket);
-        void createTicketEntry(SupplyTicket ticket);
-        String getShopsName(int shopsId);
-        float getShopsLat(int shopsId);
-        float getShopsLon(int shopsId);
-        float getStoreLat(int storeId);
-        float getStoreLon(int storeId);
-        int[] getDriversByStoreId(int storeId);
-        ArrayList getTicketsByDrivers(int[] drivers);
+        ArrayList CreateTicketTable();
+        void CreateTicketNaive(SupplyTicket ticket);
+        void CreateTicketEntry(SupplyTicket ticket);
+        String GetShopsName(int shopsId);
+        float GetShopsLat(int shopsId);
+        float GetShopsLon(int shopsId);
+        float GetStoreLat(int storeId);
+        float GetStoreLon(int storeId);
+        int[] GetDriversByStoreId(int storeId);
+        ArrayList GetTicketsByDrivers(int[] drivers);
 
-        void createTicketNew(SupplyTicket ticket);
+        void CreateTicketNew(SupplyTicket ticket);
     }
 }

@@ -1,14 +1,15 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Dyspozytornia.Models;
 
 namespace Dyspozytornia.Data
 {
     public interface IMapPointerRepository
     {
-        ArrayList createStoreTable();
-        ArrayList createShopTable();
-        void createMapPointer(NewMapPointer mapPointer, String typeOfPoint);
-        NewMapPointer getPointerByName(String shopName);
+        ArrayList CreateStoreTable();
+        ArrayList CreateShopTable();
+        void CreateMapPointer(NewMapPointer mapPointer, string typeOfPoint);
+        NewMapPointer GetPointerByName(string shopName);
     }
 }

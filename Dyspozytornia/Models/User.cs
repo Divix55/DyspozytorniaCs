@@ -18,12 +18,12 @@ namespace Dyspozytornia.Models
 
         public int Privileges { get; set; }
 
-        public bool isValidLogin()
+        public bool IsValidLogin()
         {
             return true;
         }
 
-        public bool isValidRegister()
+        public bool IsValidRegister()
         {
             return true;
         }
