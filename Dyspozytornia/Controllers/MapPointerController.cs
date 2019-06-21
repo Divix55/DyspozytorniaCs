@@ -24,7 +24,6 @@ namespace Dyspozytornia.Controllers
         {
             ArrayList mapPointer = pointerService.showStoreTable();
             ViewBag.table = tableFillerFunction(mapPointer);
-            //ViewData["Stores"] = tableFillerFunction(mapPointer);
             return View();
         }
 
@@ -32,6 +31,8 @@ namespace Dyspozytornia.Controllers
         [Authorize]
         public IActionResult Shops()
         {
+            ArrayList mapPointer = pointerService.showShopTable();
+            ViewBag.table = tableFillerFunction(mapPointer);
             return View();
         }
 
