@@ -5,30 +5,30 @@ namespace Dyspozytornia.Models
     
     public class SupplyTicket
     { 
-        public int ticketId { get; set; }
-        public int storeId { get; set; }
-        public int shopId { get; set; }
-        public int driverId { get; set; }
-        public String deliveryDate { get; set; }
-        public bool isCompleted { get; set; }
-        public String shopName { get; set; }
-        public String ticketStatus { get; set; }
-        public float shopLon { get; set; }
-        public float shopLat { get; set; }
-        public String shopDay { get; set; }
-        public String shopMonth { get; set; }
-        public String shopYear { get; set; }
-        public String shopHour { get; set; }
-        public String shopMinute { get; set; }
-        public double distance { get; set; }
-        public double duration { get; set; }
-        public int path { get; set; }
+        public int TicketId { get; set; }
+        public int StoreId { get; set; }
+        public int ShopId { get; set; }
+        public int DriverId { get; set; }
+        public string DeliveryDate { get; set; }
+        public bool IsCompleted { get; set; }
+        public string ShopName { get; set; }
+        public string TicketStatus { get; set; }
+        public float ShopLon { get; set; }
+        public float ShopLat { get; set; }
+        public string ShopDay { get; set; }
+        public string ShopMonth { get; set; }
+        public string ShopYear { get; set; }
+        public string ShopHour { get; set; }
+        public string ShopMinute { get; set; }
+        public double Distance { get; set; }
+        public double Duration { get; set; }
+        public int Path { get; set; }
         
  
-        public String MyToString(){ 
-            return "TicketId: " + ticketId + " |StoreId: " + storeId + " |ShopId: " + shopId + " |ShopName: " + shopName + " |DriverId: " + driverId + 
-                   " |DeliveryDate: " + deliveryDate + " |Lon: " + shopLon + " |Lat: " + shopLat + " |Dist: " + distance + 
-                   " |Duration: " + duration + " |Status: " + ticketStatus;
+        public string MyToString(){ 
+            return "TicketId: " + TicketId + " |StoreId: " + StoreId + " |ShopId: " + ShopId + " |ShopName: " + ShopName + " |DriverId: " + DriverId + 
+                   " |DeliveryDate: " + DeliveryDate + " |Lon: " + ShopLon + " |Lat: " + ShopLat + " |Dist: " + Distance + 
+                   " |Duration: " + Duration + " |Status: " + TicketStatus;
         }
     }
 }

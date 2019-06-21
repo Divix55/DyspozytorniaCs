@@ -1,8 +1,33 @@
 @{
     ViewData["Title"] = "Supply";
 }
+<body onload="load()">
+<main>
+    <section class="mainBody">
+        <div class="row">
+            <div class="title"><h1>Dostawy</h1></div>
+            <div class="col-sm-12">
 
-<div class="text-center">
-    <h1 class="display-4">Supply</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+                <div class="mainText">
+                    <p>
+                        Obecne zamowienia <br/>
+                    </p>
+                    @Html.Raw(@ViewBag.table)
+                    <a href="/supplyDeliveryRequest"><p>Zloz zamowienie</p></a>
+
+                    <a href="/acceptDelivery"><p>Zaakceptuj wysylke</p></a>
+
+
+                </div>
+                <div id="map" style="width: 500px; height: 500px; margin: 50px auto 0;">
+                </div><br />
+                <input type="text" id="nr_dostawy" value="0">
+                <button id="myBtn">Pokaz trase</button>
+            </div>
+        </div>
+    </section>
+</main>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3WIk3vjEwjCUZgtvq6O0630P8-0LWho&callback=initMap&sensor=true">
+</script>
+</body>

@@ -20,12 +20,7 @@ namespace Dyspozytornia.Models
 
         public bool IsValidLogin()
         {
-            return true;
-        }
-
-        public bool IsValidRegister()
-        {
-            return true;
+            return UserName.Length > 0 && UserPassword.Length > 0;
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,16 +55,16 @@ namespace Dyspozytornia.Controllers
             return RedirectToAction("MapPointerRegister", "MapPointer");
         }
         
-        private String TableFillerFunction(ArrayList mapPointer) {
-            StringBuilder tableFill = new StringBuilder();
+        private string TableFillerFunction(ArrayList mapPointer) {
+            var tableFill = new StringBuilder();
             foreach(NewMapPointer point in mapPointer) {
-                String htmlTag = "<tr class=\"wiersz\"><td class=\"name\">" + point.pointName + "</td>" +
-                                 "<td style=\"display:none\" class=\"lat\">" + point.pointLatitude +
-                                 "</td><td style=\"display:none\" class=\"lon\">" + point.pointLongitude + "</td>" +
-                                 "</td><td class=\"nip\">" + point.nip + "</td>" +
-                                 "</td><td class=\"city\">" + point.pointCity + "</td>" +
-                                 "</td><td class=\"address\">" + point.pointAddress + "</td>" +
-                                 "</td><td class=\"homenumber\">" + point.pointAddressBlockNumber + "</td>" +
+                var htmlTag = "<tr class=\"wiersz\"><td class=\"name\">" + point.PointName + "</td>" +
+                                 "<td style=\"display:none\" class=\"lat\">" + point.PointLatitude +
+                                 "</td><td style=\"display:none\" class=\"lon\">" + point.PointLongitude + "</td>" +
+                                 "</td><td class=\"nip\">" + point.Nip + "</td>" +
+                                 "</td><td class=\"city\">" + point.PointCity + "</td>" +
+                                 "</td><td class=\"address\">" + point.PointAddress + "</td>" +
+                                 "</td><td class=\"homenumber\">" + point.PointAddressBlockNumber + "</td>" +
                                  "</tr>";
                 tableFill.Append(htmlTag);
             }

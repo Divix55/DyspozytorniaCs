@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Dyspozytornia.Models;
 
 namespace Dyspozytornia.Data
@@ -15,8 +16,9 @@ namespace Dyspozytornia.Data
         float GetStoreLat(int storeId);
         float GetStoreLon(int storeId);
         int[] GetDriversByStoreId(int storeId);
-        ArrayList GetTicketsByDrivers(int[] drivers);
+        ArrayList GetTicketsByDrivers(IEnumerable<int> drivers);
 
         void CreateTicketNew(SupplyTicket ticket);
+        ArrayList GetAllPendingTickets();
     }
 }

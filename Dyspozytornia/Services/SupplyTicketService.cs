@@ -57,5 +57,10 @@ namespace Dyspozytornia.Services
         public void CreateTicketNew(SupplyTicket ticket) {
             _supplyTicketRepository.CreateTicketNew(ticket);
         }
+
+        public ArrayList GetPendingTickets()
+        {
+            return _supplyTicketRepository.GetAllPendingTickets();
+        }
     }
 }

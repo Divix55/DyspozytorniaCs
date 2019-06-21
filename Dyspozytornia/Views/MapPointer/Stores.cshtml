@@ -2,7 +2,35 @@
     ViewData["Title"] = "Stores";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Stores</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;subset=latin-ext" rel="stylesheet">
+<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+<body onLoad="load()">
+<main>
+    <section class="mainBody">
+        <div class="row">
+            <div class="title"><h1>Magazyny</h1></div>
+
+            <div class="col-sm-12 mainText">
+                <table>
+                    <tr>
+                        <th style="width: 10%"> Nazwa punktu </th>
+                        <th style="display:none">Szerokosc geogr.</th>
+                        <th style="display:none">Dlugosc geogr.</th>
+                        <th> NIP </th>
+                        <th> Miasto </th>
+                        <th> Adres </th>
+                        <th> Lokal </th>
+                    </tr>
+                    @Html.Raw(ViewBag.table)
+                </table>
+                <div id="map" style="width: 500px; height: 500px; margin: 50px auto 0;"></div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz3WIk3vjEwjCUZgtvq6O0630P8-0LWho&callback=initMap&sensor=true">
+</script>

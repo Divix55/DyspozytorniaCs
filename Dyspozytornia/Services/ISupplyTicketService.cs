@@ -17,5 +17,6 @@ namespace Dyspozytornia.Services
         int[] GetDriversByStoreId(int storeId);
         ArrayList GetTicketsByDrivers(int[] drivers);
         void CreateTicketNew(SupplyTicket ticket);
+        ArrayList GetPendingTickets();
     }
 }

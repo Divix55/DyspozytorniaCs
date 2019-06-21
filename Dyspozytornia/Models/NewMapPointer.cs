@@ -5,28 +5,28 @@ namespace Dyspozytornia.Models
 {
     public class NewMapPointer
     {
-        [DisplayName("Point ID")] public int pointId { get; set; }
-        [DisplayName("Nazwa")] public string pointName { get; set; }
-        [DisplayName("NIP")] public string nip { get; set; }
-        [DisplayName("Miasto")] public string pointCity { get; set; }
-        [DisplayName("Adres")] public string pointAddress { get; set; }
-        [DisplayName("Numer domu")] public string pointAddressBlockNumber { get; set; }
-        [DisplayName("Longitude")] public double pointLongitude { get; set; }
-        [DisplayName("Latitude")] public double pointLatitude { get; set; }
-        [DisplayName("Typ")] public string pointType { get; set; }
+        [DisplayName("Point ID")] public int PointId { get; set; }
+        [DisplayName("Nazwa")] public string PointName { get; set; }
+        [DisplayName("NIP")] public string Nip { get; set; }
+        [DisplayName("Miasto")] public string PointCity { get; set; }
+        [DisplayName("Adres")] public string PointAddress { get; set; }
+        [DisplayName("Numer domu")] public string PointAddressBlockNumber { get; set; }
+        [DisplayName("Longitude")] public double PointLongitude { get; set; }
+        [DisplayName("Latitude")] public double PointLatitude { get; set; }
+        [DisplayName("Typ")] public string PointType { get; set; }
         
-        public String MyToString()
+        public string MyToString()
         {
-            return "ID: " + pointId + " Name: " + pointName + " Lon: " + pointLongitude + " Lat: " + pointLatitude;
+            return "ID: " + PointId + " Name: " + PointName + " Lon: " + PointLongitude + " Lat: " + PointLatitude;
         }
 
         public bool Equals(NewMapPointer pointer){
-            return pointLongitude == pointer.pointLongitude && pointLatitude == pointer.pointLatitude;
+            return PointLongitude == pointer.PointLongitude && PointLatitude == pointer.PointLatitude;
         }
 
         public bool Exists()
         {
-            return pointId != 0;
+            return PointId != 0;
         }
     }
 }

@@ -13,8 +13,7 @@ namespace Dyspozytornia.Data
             conn.Open();
             bool isCreated;
 
-            var sql =
-                "Insert into Users (StoreId, UserName, FirstName, LastName, Email, UserPassword) values(?storeId, ?userName, ?firstName, ?lastName, ?email, ?password)";
+            const string sql = "Insert into Users (StoreId, UserName, FirstName, LastName, Email, UserPassword) values(?storeId, ?userName, ?firstName, ?lastName, ?email, ?password)";
 
             var cmd = new MySqlCommand(sql, conn);
             cmd.Prepare();
@@ -50,8 +49,7 @@ namespace Dyspozytornia.Data
             conn.Open();
             var userExist = false;
 
-            var sql =
-                "select u.UserName, u.UserPassword from Users u where UserName = @userName and UserPassword = @userPassword";
+            const string sql = "select u.UserName, u.UserPassword from Users u where UserName = @userName and UserPassword = @userPassword";
 
             var cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("userName", userName);
@@ -74,16 +72,16 @@ namespace Dyspozytornia.Data
             return userExist;
         }
 
-        public MySqlConnection Connect()
+        private static MySqlConnection Connect()
         {
             var connection = new MySqlConnection();
 
-            var server = "localhost";
-            var database = "sipdb";
-            var user = "sipAccessUser";
-            var password = "sip";
-            var port = "3306";
-            var sslM = "none";
+            const string server = "localhost";
+            const string database = "sipdb";
+            const string user = "sipAccessUser";
+            const string password = "sip";
+            const string port = "3306";
+            const string sslM = "none";
 
             connection.ConnectionString =
                 $"server={server};port={port};user id={user}; password={password}; database={database}; SslMode={sslM}";

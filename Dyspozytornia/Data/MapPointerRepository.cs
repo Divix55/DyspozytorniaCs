@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Reflection;
 using Dyspozytornia.Models;
-using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 
 namespace Dyspozytornia.Data
@@ -13,7 +12,7 @@ namespace Dyspozytornia.Data
         {
             var conn = Connect();
             conn.Open();
-            var sql = "select StoreId, Name, NIP, City, Street, HomeNumber, Longitude, Latitude from Stores";
+            const string sql = "select StoreId, Name, NIP, City, Street, HomeNumber, Longitude, Latitude from Stores";
             
             var listOfPointers = new ArrayList();
             
@@ -22,15 +21,17 @@ namespace Dyspozytornia.Data
                 cmd.Prepare();
                 var resultSet = cmd.ExecuteReader();   
                 while (resultSet.Read()) {
-                    NewMapPointer newPoint = new NewMapPointer();
-                    newPoint.pointId = resultSet.GetInt32("StoreId");
-                    newPoint.pointName = resultSet.GetString("Name");
-                    newPoint.nip = resultSet.GetString("NIP");
-                    newPoint.pointCity = resultSet.GetString("City");
-                    newPoint.pointAddress = resultSet.GetString("Street");
-                    newPoint.pointAddressBlockNumber = resultSet.GetString("HomeNumber");
-                    newPoint.pointLongitude = resultSet.GetDouble("Longitude");
-                    newPoint.pointLatitude = resultSet.GetDouble("Latitude");
+                    var newPoint = new NewMapPointer
+                    {
+                        PointId = resultSet.GetInt32("StoreId"),
+                        PointName = resultSet.GetString("Name"),
+                        Nip = resultSet.GetString("NIP"),
+                        PointCity = resultSet.GetString("City"),
+                        PointAddress = resultSet.GetString("Street"),
+                        PointAddressBlockNumber = resultSet.GetString("HomeNumber"),
+                        PointLongitude = resultSet.GetFloat("Longitude"),
+                        PointLatitude = resultSet.GetFloat("Latitude")
+                    };
                     listOfPointers.Add(newPoint);
                 }
                 conn.Close();
@@ -47,29 +48,35 @@ namespace Dyspozytornia.Data
         public void CreateMapPointer(NewMapPointer mapPointer, string typeOfPoint) 
         {
             var sql = "";
-            
-            if (typeOfPoint == "Stores") {
-                sql = "Insert into Stores (Name, NIP, City, Street, HomeNumber, Longitude, Latitude) values(?name, ?nip, ?city, ?street, ?homeNumber, ?longitude, ?latitude)";
-            } else if (typeOfPoint == "Shops"){
-                sql = "Insert into Shops (Name, NIP, City, Street, HomeNumber, Longitude, Latitude) values(?name, ?nip, ?city, ?street, ?homeNumber, ?longitude, ?latitude)";
+
+            switch (typeOfPoint)
+            {
+                case "Stores":
+                    sql =
+                        "Insert into Stores (Name, NIP, City, Street, HomeNumber, Longitude, Latitude) values(?name, ?nip, ?city, ?street, ?homeNumber, ?longitude, ?latitude)";
+                    break;
+                case "Shops":
+                    sql =
+                        "Insert into Shops (Name, NIP, City, Street, HomeNumber, Longitude, Latitude) values(?name, ?nip, ?city, ?street, ?homeNumber, ?longitude, ?latitude)";
+                    break;
             }
-            
+
             var conn = Connect();
             conn.Open();
             var cmd = new MySqlCommand(sql, conn);
             cmd.Prepare();
-            cmd.Parameters.Add("?name", MySqlDbType.VarChar).Value = mapPointer.pointName;
-            cmd.Parameters.Add("?nip", MySqlDbType.VarChar).Value = mapPointer.nip;
-            cmd.Parameters.Add("?city", MySqlDbType.VarChar).Value = mapPointer.pointCity;
-            cmd.Parameters.Add("?street", MySqlDbType.VarChar).Value = mapPointer.pointAddress;
-            cmd.Parameters.Add("?homeNumber", MySqlDbType.VarChar).Value = mapPointer.pointAddressBlockNumber;
-            cmd.Parameters.Add("?longitude", MySqlDbType.Float).Value = mapPointer.pointLongitude;
-            cmd.Parameters.Add("?latitude", MySqlDbType.Float).Value = mapPointer.pointLatitude;
+            cmd.Parameters.Add("?name", MySqlDbType.VarChar).Value = mapPointer.PointName;
+            cmd.Parameters.Add("?nip", MySqlDbType.VarChar).Value = mapPointer.Nip;
+            cmd.Parameters.Add("?city", MySqlDbType.VarChar).Value = mapPointer.PointCity;
+            cmd.Parameters.Add("?street", MySqlDbType.VarChar).Value = mapPointer.PointAddress;
+            cmd.Parameters.Add("?homeNumber", MySqlDbType.VarChar).Value = mapPointer.PointAddressBlockNumber;
+            cmd.Parameters.Add("?longitude", MySqlDbType.Float).Value = mapPointer.PointLongitude;
+            cmd.Parameters.Add("?latitude", MySqlDbType.Float).Value = mapPointer.PointLatitude;
             
             try
             {
                 cmd.ExecuteNonQuery();
-                Console.WriteLine("MapPointer " + mapPointer.pointName + " created successful!");
+                Console.WriteLine("MapPointer " + mapPointer.PointName + " created successful!");
             }
             catch (Exception e)
             {
@@ -80,24 +87,25 @@ namespace Dyspozytornia.Data
             }
         }
         
-        public NewMapPointer GetPointerByName(String shopName) 
+        public NewMapPointer GetPointerByName(string shopName) 
         {
             var conn = Connect();
             conn.Open();
-            var sql = "Select * from Shops where Name = @Name";
+            const string sql = "Select * from Shops where Name = @Name";
             
-            NewMapPointer newPoint = new NewMapPointer();
+            var newPoint = new NewMapPointer();
 
             try{
                 var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Name", shopName);
                 cmd.Prepare();
                 var resultSet = cmd.ExecuteReader(); 
                 
-                if (resultSet.NextResult()) {
-                    newPoint.pointId = resultSet.GetInt32("ShopId");
-                    newPoint.pointName = resultSet.GetString("Name");
-                    newPoint.pointLongitude = resultSet.GetDouble("Longitude");
-                    newPoint.pointLatitude = resultSet.GetDouble("Latitude");
+                if (resultSet.Read()) {
+                    newPoint.PointId = resultSet.GetInt32("ShopId");
+                    newPoint.PointName = resultSet.GetString("Name");
+                    newPoint.PointLongitude = resultSet.GetFloat("Longitude");
+                    newPoint.PointLatitude = resultSet.GetFloat("Latitude");
                 }
                 conn.Close();
 
@@ -116,9 +124,9 @@ namespace Dyspozytornia.Data
             
             var conn = Connect();
             conn.Open();
-            var sql = "select ShopId, Name, NIP, City, Street, HomeNumber, Longitude, Latitude from Shops";
+            const string sql = "select ShopId, Name, NIP, City, Street, HomeNumber, Longitude, Latitude from Shops";
             
-            ArrayList listOfPointers = new ArrayList();
+            var listOfPointers = new ArrayList();
 
             try{
                 var cmd = new MySqlCommand(sql, conn);
@@ -126,15 +134,17 @@ namespace Dyspozytornia.Data
 
                 var resultSet = cmd.ExecuteReader();   
                 while (resultSet.Read()) {
-                    NewMapPointer newPoint = new NewMapPointer();
-                    newPoint.pointId = resultSet.GetInt32("ShopId");
-                    newPoint.pointName = resultSet.GetString("Name");
-                    newPoint.nip = resultSet.GetString("NIP");
-                    newPoint.pointCity = resultSet.GetString("City");
-                    newPoint.pointAddress = resultSet.GetString("Street");
-                    newPoint.pointAddressBlockNumber = resultSet.GetString("HomeNumber");
-                    newPoint.pointLongitude = resultSet.GetDouble("Longitude");
-                    newPoint.pointLatitude = resultSet.GetDouble("Latitude");
+                    var newPoint = new NewMapPointer
+                    {
+                        PointId = resultSet.GetInt32("ShopId"),
+                        PointName = resultSet.GetString("Name"),
+                        Nip = resultSet.GetString("NIP"),
+                        PointCity = resultSet.GetString("City"),
+                        PointAddress = resultSet.GetString("Street"),
+                        PointAddressBlockNumber = resultSet.GetString("HomeNumber"),
+                        PointLongitude = resultSet.GetFloat("Longitude"),
+                        PointLatitude = resultSet.GetFloat("Latitude")
+                    };
                     listOfPointers.Add(newPoint);
                 }
                 conn.Close();
@@ -147,17 +157,17 @@ namespace Dyspozytornia.Data
             }
             return listOfPointers;
         }
-        
-        public MySqlConnection Connect()
+
+        private static MySqlConnection Connect()
         {
             var connection = new MySqlConnection();
 
-            var server = "localhost";
-            var database = "sipdb";
-            var user = "sipAccessUser";
-            var password = "sip";
-            var port = "3306";
-            var sslM = "none";
+            const string server = "localhost";
+            const string database = "sipdb";
+            const string user = "sipAccessUser";
+            const string password = "sip";
+            const string port = "3306";
+            const string sslM = "none";
 
             connection.ConnectionString =
                 $"server={server};port={port};user id={user}; password={password}; database={database}; SslMode={sslM}";

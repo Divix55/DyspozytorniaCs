@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Dyspozytornia.Models;
 using Dyspozytornia.Services;
@@ -13,7 +14,7 @@ namespace Dyspozytornia.Controllers
     {
         private readonly ISupplyTicketService _ticketService;
         private readonly MapPointerService _pointerService;
-        private readonly int MAX_TICKETS_PER_DRIVER = 3;
+        private const int MaxTicketsPerDriver = 3;
 
         public SupplyController()
         {
@@ -25,8 +26,8 @@ namespace Dyspozytornia.Controllers
         [Authorize]
         public IActionResult Supply()
         {
-            ArrayList supplyTickets = new ArrayList(_ticketService.ShowTickets());
-            StringBuilder tableFill = new StringBuilder("Obecnie nie mamy zadnych zamowien");
+            var supplyTickets = new ArrayList(_ticketService.ShowTickets());
+            var tableFill = new StringBuilder("Obecnie nie mamy zadnych zamowien");
 
             if(supplyTickets.Count>0) {
                 tableFill = new StringBuilder("<table id='tabela_dostawy'>" +
@@ -43,21 +44,20 @@ namespace Dyspozytornia.Controllers
                         "<th>Numer trasy</th>" +
                         "</tr>\n");
                 foreach (SupplyTicket ticket in supplyTickets) {
-                    if (!ticket.isCompleted) {
-                        String shopName = _ticketService.GetShopsName(ticket.shopId);
-                        float shopLon = _ticketService.GetShopsLon(ticket.shopId);
-                        float shopLat = _ticketService.GetShopsLat(ticket.shopId);
-                        float storeLon = _ticketService.GetStoreLon(ticket.shopId);
-                        float storeLat = _ticketService.GetStoreLat(ticket.shopId);
+                    if (ticket.IsCompleted) continue;
+                    var shopName = _ticketService.GetShopsName(ticket.ShopId);
+                    var shopLon = _ticketService.GetShopsLon(ticket.ShopId);
+                    var shopLat = _ticketService.GetShopsLat(ticket.ShopId);
+                    var storeLon = _ticketService.GetStoreLon(ticket.ShopId);
+                    var storeLat = _ticketService.GetStoreLat(ticket.ShopId);
     
-                        String htmlTag = "<tr><td>" + ticket.ticketId + "</td><td>" + shopName +
-                                "</td><td style='display: none'>" + shopLon + "</td><td style='display: none'>" + shopLat +
-                                "</td><td style='display: none'>" + storeLon + "</td><td style='display: none'>" + storeLat +
-                                "</td><td>" + ticket.storeId + "</td><td>"+ ticket.driverId +"</td><td>"+
-                                ticket.duration + "</td><td>" + ticket.ticketStatus + "</td><td>"+
-                                ticket.deliveryDate + "</td><td>" + ticket.path + "</td></tr>\n";
-                        tableFill.Append(htmlTag);
-                    }
+                    var htmlTag = "<tr><td>" + ticket.TicketId + "</td><td>" + shopName +
+                                  "</td><td style='display: none'>" + shopLon + "</td><td style='display: none'>" + shopLat +
+                                  "</td><td style='display: none'>" + storeLon + "</td><td style='display: none'>" + storeLat +
+                                  "</td><td>" + ticket.StoreId + "</td><td>"+ ticket.DriverId +"</td><td>"+
+                                  ticket.Duration + "</td><td>" + ticket.TicketStatus + "</td><td>"+
+                                  ticket.DeliveryDate + "</td><td>" + ticket.Path + "</td></tr>\n";
+                    tableFill.Append(htmlTag);
                 }
                 tableFill.Append("</table>");
             }
@@ -69,78 +69,90 @@ namespace Dyspozytornia.Controllers
 
         [Route("/acceptDelivery")]
         [Authorize]
-        public IActionResult AcceptDelivery(ArrayList supplyTickets){
+        public IActionResult AcceptDelivery()
+        {
+            var supplyTickets = _ticketService.GetPendingTickets();
+
+            if (supplyTickets.Count < 3)
+            {
+                return RedirectToAction("Supply", "Supply");
+            }
             
             //struktura wygląda następująco:        Map< STORE_ID, Map< DISTANCE, Map< TICKET_ID_LIST, SHOP_ID_LIST( == PATH) >>>
-            Dictionary<int, Dictionary<Double, Dictionary<ArrayList, ArrayList>>> finalDistanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
+            var finalDistanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
 
-            ArrayList allWarehouses = _pointerService.ShowStoreTable();
+            var allWarehouses = _pointerService.ShowStoreTable();
 
-            ArrayList nextFewTickets = new ArrayList();
+            var nextFewTickets = new ArrayList();
 
-            int ticketCounter = 0;
-            foreach(SupplyTicket ticket in supplyTickets) {
+            var ticketCounter = 0;
+            foreach (SupplyTicket ticket in supplyTickets)
+            {
                 //log.info(ticket.toString());
-                if (ticket.ticketStatus != "oczekujace")
+                if (ticket.TicketStatus != "oczekujace")
                     continue;
-                if (ticketCounter == MAX_TICKETS_PER_DRIVER)
+                if (ticketCounter == MaxTicketsPerDriver)
                     break;
                 nextFewTickets.Add(ticket);
                 ticketCounter++;
             }
 
-            Dictionary<int, Dictionary<Double, Dictionary<ArrayList, ArrayList>>> distanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
-            foreach(NewMapPointer warehouse in allWarehouses){
-                Dictionary<Double, Dictionary<ArrayList, ArrayList>> distance_path_map;
-                distance_path_map = CalculateShortestDistanceAndPath(nextFewTickets, warehouse);
+            var distanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
+            foreach (NewMapPointer warehouse in allWarehouses)
+            {
+                var distancePathMap = CalculateShortestDistanceAndPath(nextFewTickets, warehouse);
 
-                distanceMap[warehouse.pointId] = distance_path_map;
+                distanceMap[warehouse.PointId] = distancePathMap;
             }
 
             double shortestDistance = 10000;
-            foreach(KeyValuePair<int, Dictionary<Double, Dictionary<ArrayList, ArrayList>>> shortestPathPerWarehouse in distanceMap){
-                int warehouseId = shortestPathPerWarehouse.Key;
-                Dictionary<Double, Dictionary<ArrayList, ArrayList>> distance_path_map = shortestPathPerWarehouse.Value;
-                double distance = distance_path_map.GetEnumerator().MoveNext().GetHashCode();
-                if(distance < shortestDistance){
-                    shortestDistance = distance;
-                    finalDistanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>();
-                    finalDistanceMap[warehouseId] = shortestPathPerWarehouse.Value;
-                }
+            foreach (var (warehouseId, distancePathMap) in distanceMap)
+            {
+                double distance = distancePathMap.ElementAt(0).Key;
+                if (!(distance < shortestDistance)) continue;
+                shortestDistance = distance;
+                finalDistanceMap = new Dictionary<int, Dictionary<double, Dictionary<ArrayList, ArrayList>>>
+                {
+                    [warehouseId] = distancePathMap
+                };
             }
 
-            finalDistanceMap.GetEnumerator().MoveNext();
-            finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().MoveNext();
-            Dictionary<ArrayList, ArrayList> sicketId_and_path =
-                finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Value;
+            Console.WriteLine("Length 1: " + finalDistanceMap.Count);
+            Console.WriteLine("Length 2: " + finalDistanceMap.Values.Count);
 
-            ArrayList ticketIdList = sicketId_and_path.GetEnumerator().Current.Key;
-            ArrayList pathList = sicketId_and_path.GetEnumerator().Current.Value;
-            int pathId = -1;
-            for(int n = 0; n < MAX_TICKETS_PER_DRIVER; n++){
-                int shopId = pathList.IndexOf(n);
-                int ticketId = ticketIdList.IndexOf(n);
-                SupplyTicket ticket = new SupplyTicket();
-                ticket.shopId = shopId;
-                ticket.ticketId = ticketId;
-                ticket.shopName = _ticketService.GetShopsName(shopId);
-                ticket.ticketStatus = "w realizacji";
+            var sicketIdAndPath =
+                finalDistanceMap.ElementAt(0).Value.ElementAt(0).Value;
+
+            ArrayList ticketIdList = sicketIdAndPath.ElementAt(0).Key;
+            ArrayList pathList = sicketIdAndPath.ElementAt(0).Value;
+            var pathId = -1;
+            for (var n = 0; n < MaxTicketsPerDriver; n++)
+            {
+                var shopId = pathList[n];
+                var ticketId = ticketIdList[n];
+                var ticket = new SupplyTicket
+                {
+                    ShopId = (int) shopId,
+                    TicketId = (int) ticketId,
+                    ShopName = _ticketService.GetShopsName((int) shopId),
+                    TicketStatus = "w realizacji"
+                };
                 //to powinno brać odległość
-                double distance = finalDistanceMap.GetEnumerator().Current.Value.GetEnumerator().Current.Key;
-                ticket.duration = UtilsService.CalculateDuration(distance);
-                ticket.distance = distance;
-                ticket.driverId = 1;
-                ticket.storeId = finalDistanceMap.GetEnumerator().Current.Key;
-                ticket.deliveryDate = "date";
-                
-                if(n==0)
-                    pathId = ticketId;
-                ticket.path = pathId;
+                var distance = finalDistanceMap.ElementAt(0).Value.ElementAt(0).Key;
+                ticket.Duration = UtilsService.CalculateDuration(distance);
+                ticket.Distance = distance;
+                ticket.DriverId = 1;
+                ticket.StoreId = finalDistanceMap.ElementAt(0).Key;
+                ticket.DeliveryDate = "date";
+
+                if (n == 0)
+                    pathId = (int) ticketId;
+                ticket.Path = pathId;
                 _ticketService.CreateTicketNew(ticket);
             }
-            
 
-            return View();
+
+            return RedirectToAction("Supply", "Supply");
         }
 
         [Route("/supplyDeliveryRequest")]
@@ -148,20 +160,20 @@ namespace Dyspozytornia.Controllers
         [HttpGet]
         public IActionResult SupplyDeliveryRequest()
         {
-            ArrayList shopList = _pointerService.ShowShopTable();
-            StringBuilder shopOptions = new StringBuilder();
-            StringBuilder shopDay = new StringBuilder();
-            StringBuilder shopMonth = new StringBuilder();
-            StringBuilder shopYear = new StringBuilder();
-            StringBuilder shopHour = new StringBuilder();
-            StringBuilder shopMinute = new StringBuilder();
+            var shopList = _pointerService.ShowShopTable();
+            var shopOptions = new StringBuilder();
+            var shopDay = new StringBuilder();
+            var shopMonth = new StringBuilder();
+            var shopYear = new StringBuilder();
+            var shopHour = new StringBuilder();
+            var shopMinute = new StringBuilder();
 
             foreach(NewMapPointer shop in shopList){
-                String htmlTag = "<option>" + shop.pointName + "</option>";
+                var htmlTag = "<option>" + shop.PointName + "</option>";
                 shopOptions.Append(htmlTag);
             }
 
-            for (int i=1; i<=60; i++){
+            for (var i=1; i<=60; i++){
                 if (i<= 12){
                     shopMonth.Append("<option>").Append(i).Append("</option>");
                 }
@@ -193,31 +205,41 @@ namespace Dyspozytornia.Controllers
         [Route("/supplyDeliveryRequest")]
         [HttpPost]
         [Authorize]
-        public String CheckMapPointerRegister(SupplyTicket ticket){
+        public IActionResult CheckMapPointerRegister(string sklep, string dzien, string miesiac, string rok, string godzina, string minuta){
+            var ticket = new SupplyTicket
+            {
+                ShopName = sklep,
+                ShopDay = dzien,
+                ShopHour = godzina,
+                ShopMinute = minuta,
+                ShopMonth = miesiac,
+                ShopYear = rok
+            };
+
             _ticketService.CreateTicketEntry(ticket);
-            return "redirect:/supply";
+            return RedirectToAction("supply");
         }
 
-        private Dictionary<Double, Dictionary<ArrayList, ArrayList>> CalculateShortestDistanceAndPath(ArrayList tickets,
+        private Dictionary<double, Dictionary<ArrayList, ArrayList>> CalculateShortestDistanceAndPath(ArrayList tickets,
                                                                               NewMapPointer warehouse){
-        Dictionary<Double, Dictionary<ArrayList, ArrayList>> distance_path_map = new Dictionary<double, Dictionary<ArrayList, ArrayList>>();
+        var distancePathMap = new Dictionary<double, Dictionary<ArrayList, ArrayList>>();
 
-        ArrayList shortestDeliveryPath = new ArrayList();
-        ArrayList ticketIds = new ArrayList();
+        var shortestDeliveryPath = new ArrayList();
+        var ticketIds = new ArrayList();
         double shortestDistance = 1000;
         foreach(SupplyTicket ticket in tickets){
-            ticketIds.Add(ticket.ticketId);
+            ticketIds.Add(ticket.TicketId);
 
-            ArrayList deliveryPath = new ArrayList();
+            var deliveryPath = new ArrayList();
 
-            String shopName = _ticketService.GetShopsName(ticket.shopId);
-            NewMapPointer shop1 = _pointerService.GetPointerByName(shopName);
+            var shopName = _ticketService.GetShopsName(ticket.ShopId);
+            var shop1 = _pointerService.GetPointerByName(shopName);
 
-            double distance = UtilsService.CalculateDistanceInStraightLine(warehouse, shop1);
-            deliveryPath.Add(shop1.pointId);
+            var distance = UtilsService.CalculateDistanceInStraightLine(warehouse, shop1);
+            deliveryPath.Add(shop1.PointId);
 
-            SupplyTicket ticket2 = new SupplyTicket();
-            SupplyTicket ticket3 = new SupplyTicket();
+            SupplyTicket ticket2;
+            SupplyTicket ticket3;
             
             if (tickets[0] == ticket){
                 //pobieram id jednego z pozostałych ticketów, a potem wyznaczam na podstawie ID nazwę, żeby potem na
@@ -233,108 +255,98 @@ namespace Dyspozytornia.Controllers
                 ticket2 = (SupplyTicket)tickets[0];
                 ticket3 = (SupplyTicket)tickets[1];
             }
-            String shopName2 = _ticketService.GetShopsName(ticket2.shopId);
-            String shopName3 = _ticketService.GetShopsName(ticket3.shopId);
+            var shopName2 = _ticketService.GetShopsName(ticket2.ShopId);
+            var shopName3 = _ticketService.GetShopsName(ticket3.ShopId);
 
-            NewMapPointer shop2 = _pointerService.GetPointerByName(shopName2);
-            NewMapPointer shop3 = _pointerService.GetPointerByName(shopName3);
+            var shop2 = _pointerService.GetPointerByName(shopName2);
+            var shop3 = _pointerService.GetPointerByName(shopName3);
 
-            double distance2 = UtilsService.CalculateDistanceInStraightLine(shop1, shop2);
-            double distance3 = UtilsService.CalculateDistanceInStraightLine(shop1, shop3);
+            var distance2 = UtilsService.CalculateDistanceInStraightLine(shop1, shop2);
+            var distance3 = UtilsService.CalculateDistanceInStraightLine(shop1, shop3);
 
-            double closer = Math.Min(distance2, distance3);
+            var closer = Math.Min(distance2, distance3);
 
             distance += closer;
 
             distance += UtilsService.CalculateDistanceInStraightLine(shop2, shop3);
-            NewMapPointer lastShop = new NewMapPointer();
+            NewMapPointer lastShop;
             if(distance2 == closer) {
                 lastShop = shop3;
-                deliveryPath.Add(shop2.pointId);
-                deliveryPath.Add(shop3.pointId);
+                deliveryPath.Add(shop2.PointId);
+                deliveryPath.Add(shop3.PointId);
             }
             else {
                 lastShop = shop2;
-                deliveryPath.Add(shop3.pointId);
-                deliveryPath.Add(shop2.pointId);
+                deliveryPath.Add(shop3.PointId);
+                deliveryPath.Add(shop2.PointId);
             }
 
             distance += UtilsService.CalculateDistanceInStraightLine(lastShop, warehouse);
 
-            if(distance < shortestDistance){
-                shortestDistance = distance;
-                shortestDeliveryPath = deliveryPath;
-            }
+            if (!(distance < shortestDistance)) continue;
+            shortestDistance = distance;
+            shortestDeliveryPath = deliveryPath;
         }
-        Dictionary<ArrayList, ArrayList> tickets_and_path = new Dictionary<ArrayList, ArrayList>();
-        tickets_and_path[ticketIds] = shortestDeliveryPath;
+        var ticketsAndPath = new Dictionary<ArrayList, ArrayList>();
+        ticketsAndPath[ticketIds] = shortestDeliveryPath;
 
-        distance_path_map[shortestDistance] = tickets_and_path;
+        distancePathMap[shortestDistance] = ticketsAndPath;
 
-        return distance_path_map;
+        return distancePathMap;
 
     }
-        private ArrayList CalculateWarehousesByTime(ArrayList warehouses,
-                                                               String date,
-                                                               String hour,
+        private ArrayList CalculateWarehousesByTime(IEnumerable warehouses,
+                                                               string date,
+                                                               string hour,
                                                                NewMapPointer whereToDeliver){
-            ArrayList calculatedWarehouses = new ArrayList();
+            var calculatedWarehouses = new ArrayList();
             foreach(NewMapPointer store in warehouses){
                 //function picks first suitable
-                double distance = UtilsService.CalculateDistanceInStraightLine(whereToDeliver, store);
-                int availableDrivers = CheckAvailableDrivers(store.pointId, distance, date, hour);
-                if (availableDrivers != 0) {
+                var distance = UtilsService.CalculateDistanceInStraightLine(whereToDeliver, store);
+                var availableDrivers = CheckAvailableDrivers(store.PointId, distance, date, hour);
+                if (availableDrivers == 0) continue;
+                var calculatedStore = new Warehouse
+                {
+                    AvailableDrivers = availableDrivers,
+                    StoreId = store.PointId,
+                    Distance = distance,
+                    DriverId = availableDrivers
+                };
 
-                    Warehouse calculatedStore = new Warehouse();
-                    calculatedStore.setAvailableDrivers(availableDrivers);
-                    calculatedStore.setStoreId(store.pointId);
-                    calculatedStore.setDistance(distance);
-                    calculatedStore.setDriverId(availableDrivers);
-
-                    calculatedWarehouses.Add(calculatedStore);
-                }
+                calculatedWarehouses.Add(calculatedStore);
             }
             return calculatedWarehouses;
         }
 
         private int CheckAvailableDrivers(int storeId, double distance, String deliveryDate, String deliveryHour){
-            int[] drivers = _ticketService.GetDriversByStoreId(storeId);
-            double deliveryDuration = UtilsService.CalculateDuration(distance);
-            ArrayList driversTickets = _ticketService.GetTicketsByDrivers(drivers);
-            foreach(int driver in drivers){
-                bool ifAvailableForDelivery = CheckAvailability(driver, driversTickets, deliveryDate, deliveryHour, deliveryDuration);
-                if(ifAvailableForDelivery){
-                    return driver;
-                }
-            }
-
-            return 0;
+            var drivers = _ticketService.GetDriversByStoreId(storeId);
+            var deliveryDuration = UtilsService.CalculateDuration(distance);
+            var driversTickets = _ticketService.GetTicketsByDrivers(drivers);
+            return (from driver in drivers let ifAvailableForDelivery = CheckAvailability(driver, driversTickets, deliveryDate, deliveryHour, deliveryDuration) where ifAvailableForDelivery select driver).FirstOrDefault();
         }
 
-        private bool CheckAvailability(int driverId,
-                                                 ArrayList driversTickets,
-                                                 String deliveryDate,
-                                                 String deliveryHour,
+        private static bool CheckAvailability(int driverId,
+                                                 IEnumerable driversTickets,
+                                                 string deliveryDate,
+                                                 string deliveryHour,
                                                  double deliveryDuration) {
             foreach(SupplyTicket ticket in driversTickets){
-                if (ticket.driverId == driverId){
-                    String ticketFullDate = ticket.deliveryDate.Split(" ")[0];
-                    String ticketFullTime = ticket.deliveryDate.Split(" ")[1];
-                    if (ticketFullDate.Equals(deliveryDate)){
-                        String[] deliveryFullTime = deliveryHour.Split((":"));
-                        String[] ticketTime = ticketFullTime.Split((":"));
-                        int deliveryHourInt = Int32.Parse(deliveryFullTime[0]);
-                        int deliveryMinuteInt = Int32.Parse(deliveryFullTime[1]);
-                        int ticketHourInt = Int32.Parse(ticketTime[0]);
-                        int ticketMinuteInt = Int32.Parse(ticketTime[1]);
+                if (ticket.DriverId != driverId) continue;
+                var ticketFullDate = ticket.DeliveryDate.Split(" ")[0];
+                var ticketFullTime = ticket.DeliveryDate.Split(" ")[1];
+                if (!ticketFullDate.Equals(deliveryDate)) continue;
+                var deliveryFullTime = deliveryHour.Split((":"));
+                var ticketTime = ticketFullTime.Split((":"));
+                var deliveryHourInt = int.Parse(deliveryFullTime[0]);
+                var deliveryMinuteInt = int.Parse(deliveryFullTime[1]);
+                var ticketHourInt = int.Parse(ticketTime[0]);
+                var ticketMinuteInt = int.Parse(ticketTime[1]);
 
-                        //in minutes
-                        int difference = 60 * (Math.Abs(deliveryHourInt - ticketHourInt)) +
-                                (Math.Abs(deliveryMinuteInt - ticketMinuteInt));
-                        if((difference - deliveryDuration) - ticket.duration < 0){
-                            return false;
-                        }
-                    }
+                //in minutes
+                var difference = 60 * (Math.Abs(deliveryHourInt - ticketHourInt)) +
+                                 (Math.Abs(deliveryMinuteInt - ticketMinuteInt));
+                if((difference - deliveryDuration) - ticket.Duration < 0){
+                    return false;
                 }
             }
             return true;

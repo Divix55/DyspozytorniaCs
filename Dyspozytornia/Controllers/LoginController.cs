@@ -35,23 +35,20 @@ namespace Dyspozytornia.Controllers
         {
             if (!loginUser.IsValidLogin()) return View();
 
-            if (await _loginService.Authenticate(loginUser.UserName, loginUser.UserPassword))
+            if (!await _loginService.Authenticate(loginUser.UserName, loginUser.UserPassword)) return View();
+            var claims = new[]
             {
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.Name, "MyUserNameOrID"),
-                    new Claim(ClaimTypes.Role, "SomeRoleName")
-                };
+                new Claim(ClaimTypes.Name, "MyUserNameOrID"),
+                new Claim(ClaimTypes.Role, "SomeRoleName")
+            };
 
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(identity));
-                return RedirectToAction("Index", "Home");
-            }
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
+            return RedirectToAction("Index", "Home");
 
-            return View();
         }
 
         [Route("/register")]
