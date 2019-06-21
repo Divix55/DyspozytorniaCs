@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using Dyspozytornia.Models;
 
-namespace Dyspozytornia.Service
+namespace Dyspozytornia.Services
 {
     public interface ISupplyTicketService
     {

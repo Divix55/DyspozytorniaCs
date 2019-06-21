@@ -3,7 +3,7 @@ using System.Collections;
 using Dyspozytornia.Data;
 using Dyspozytornia.Models;
 
-namespace Dyspozytornia.services
+namespace Dyspozytornia.Services
 {
     public class SupplyTicketService: ISupplyTicketService
     {
